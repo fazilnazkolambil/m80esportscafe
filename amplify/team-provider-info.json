@@ -1,0 +1,20 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-m80esportscafe-dev-7a82e-authRole",
+      "UnauthRoleArn": "arn:aws:iam::474668408902:role/amplify-m80esportscafe-dev-7a82e-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::474668408902:role/amplify-m80esportscafe-dev-7a82e-authRole",
+      "Region": "ap-south-1",
+      "DeploymentBucketName": "amplify-m80esportscafe-dev-7a82e-deployment",
+      "UnauthRoleName": "amplify-m80esportscafe-dev-7a82e-unauthRole",
+      "StackName": "amplify-m80esportscafe-dev-7a82e",
+      "StackId": "arn:aws:cloudformation:ap-south-1:474668408902:stack/amplify-m80esportscafe-dev-7a82e/3d7a3600-a701-11ef-b77c-0a6eeb0256ad",
+      "AmplifyAppId": "d294nxtkq3i3yn"
+    },
+    "categories": {
+      "auth": {
+        "m80esportscafe79771b6d": {}
+      }
+    }
+  }
+}

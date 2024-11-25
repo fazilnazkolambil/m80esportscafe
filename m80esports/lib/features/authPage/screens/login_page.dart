@@ -98,7 +98,6 @@ class _LoginPageState extends State<LoginPage> {
         });
       }
     } catch (err) {
-      print('Error during OTP verification: $err');
       toastMessage(
         context: context,
         label: err.toString(),
@@ -129,7 +128,8 @@ class _LoginPageState extends State<LoginPage> {
           jsonDecode(body['getCurrentUserDetails']);
       if (currentUserDetails['Data']['Items'][0]['part_of_organisation'] ==
           true) {
-        currentUser = UserModel.fromJson(currentUserDetails);
+        currentUser =
+            UserModel.fromJson(currentUserDetails['Data']['Items'][0]);
         SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.setBool('isLoggedIn', true);
         final String userJson = jsonEncode(currentUser);
@@ -140,6 +140,9 @@ class _LoginPageState extends State<LoginPage> {
             isSuccess: true);
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => CafeList()));
+        setState(() {
+          isLoading = false;
+        });
       } else {
         try {
           var orgOperations = Amplify.API.query(
@@ -160,8 +163,6 @@ class _LoginPageState extends State<LoginPage> {
           Map<String, dynamic> listOrganisations =
               jsonDecode(body['listOrganisations']);
           List items = listOrganisations['Data']['Items'];
-          print(
-              "FROM TEXT ------ ${listOrganisations['Data']['Items'][0]['organisation_name']}");
           setState(() {
             isLoading = false;
           });
@@ -187,8 +188,10 @@ class _LoginPageState extends State<LoginPage> {
                         child: DropdownButton(
                           dropdownColor: ColorConst.backgroundColor,
                           padding: EdgeInsets.symmetric(horizontal: w * 0.03),
-                          hint: Text("Available Organisations",
-                              style: textStyle(false)),
+                          hint: Text(
+                            "Available Organisations",
+                            style: textStyle(false),
+                          ),
                           icon: Icon(
                             CupertinoIcons.chevron_down,
                             size: w * 0.04,
@@ -197,23 +200,20 @@ class _LoginPageState extends State<LoginPage> {
                           underline: const SizedBox(),
                           style: textStyle(false),
                           value: selectedOrg,
-                          items: List.generate(
-                            items.length,
-                            (index) {
-                              return DropdownMenuItem(
-                                value: items[index],
-                                child: Text(items[index]['organisation_name']),
-                              );
-                            },
-                          ),
+                          items: items.map((item) {
+                            return DropdownMenuItem(
+                              value: item['organisation_name'],
+                              child: Text(item['organisation_name']),
+                            );
+                          }).toList(),
                           onChanged: (newValue) {
-                            org = newValue as Map<String, dynamic>;
-                            print(
-                                "ORG NAME FROM ONCHANGED ---- ${org['organisation_name']}");
-                            print(items[0]['organisation_name'] ==
-                                org['organisation_name']);
                             setState(() {
-                              selectedOrg = org['organisation_name'].toString();
+                              selectedOrg = newValue as String;
+                              org = items.firstWhere(
+                                (item) =>
+                                    item['organisation_name'] == selectedOrg,
+                                orElse: () => {},
+                              );
                             });
                           },
                         ),
@@ -240,10 +240,12 @@ class _LoginPageState extends State<LoginPage> {
                   },
                 );
               });
-        } catch (e) {}
+        } catch (e) {
+          toastMessage(context: context, label: 'Error : $e', isSuccess: false);
+        }
       }
     } catch (e) {
-      print('Error: $e');
+      toastMessage(context: context, label: 'Error : $e', isSuccess: false);
     }
   }
 
@@ -263,7 +265,6 @@ class _LoginPageState extends State<LoginPage> {
     try {
       final response =
           await http.post(Uri.parse(url), headers: headers, body: body);
-      print('SIGNUP RESPONSE STATUS = ${response.statusCode}');
       if (response.statusCode == 200) {
         SignInResult result = await Amplify.Auth.signIn(
           username: '$countryCode${phoneNumber_controller.text}',
@@ -291,6 +292,9 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> addUserToOrganisation({required String organisation_id}) async {
     try {
+      setState(() {
+        isLoading = true;
+      });
       var operation = Amplify.API.mutate(
           request: GraphQLRequest(
               document:
@@ -298,7 +302,7 @@ class _LoginPageState extends State<LoginPage> {
     addUserToOrganisation(input: \$input)
   }''',
               variables: {
-            'inputs': {
+            'input': {
               'contact_number': phoneNumber_controller.text,
               'organisation_id': organisation_id
             }
@@ -307,6 +311,9 @@ class _LoginPageState extends State<LoginPage> {
       var body = jsonDecode(response.data);
       getCurrentUserDetails();
     } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
       return toastMessage(
           context: context, label: 'Error : $e', isSuccess: false);
     }
@@ -370,7 +377,6 @@ class _LoginPageState extends State<LoginPage> {
                         },
                         onChanged: (value) {
                           countryCode = value;
-                          print(countryCode);
                         },
                         hideMainText: false,
                         showFlag: false,

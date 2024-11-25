@@ -138,8 +138,8 @@ class _CafeListState extends State<CafeList> {
   }''',
               variables: {
             'input': {
-              'organisation_id': currentUser!.data.items[0].organisationId,
-              'user_id': currentUser!.data.items[0].userId,
+              'organisation_id': currentUser!.organisationId,
+              'user_id': currentUser!.userId,
               // 'next_token': ''
             }
           }));
@@ -147,6 +147,7 @@ class _CafeListState extends State<CafeList> {
       var response = await operation.response;
 
       Map<String, dynamic> body = jsonDecode(response.data);
+      print(body['listGamingCenter']);
       setState(() {
         centers = jsonDecode(body['listGamingCenter']);
         isLoading = false;

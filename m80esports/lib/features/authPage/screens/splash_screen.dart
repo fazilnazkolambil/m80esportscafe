@@ -38,11 +38,12 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     getDate();
-    Future.delayed(const Duration(seconds: 3)).then((value) => Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) =>
-                isLoggedIn ? CafeList() : const LoginPage())));
+    Future.delayed(const Duration(seconds: 3)).then((value) =>
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    isLoggedIn ? CafeList() : const LoginPage())));
     super.initState();
   }
 

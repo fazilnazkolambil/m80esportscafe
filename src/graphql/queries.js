@@ -6,7 +6,7 @@ export const getCurrentUserDetails = /* GraphQL */ `
     getCurrentUserDetails(input: $input)
   }
 `;
-export const listOrganisations = /* GraphQL */ `  
+export const listOrganisations = /* GraphQL */ `
   query ListOrganisations($input: ListOrganisationsInput) {
     listOrganisations(input: $input)
   }
@@ -44,5 +44,20 @@ export const listSessions = /* GraphQL */ `
 export const listAvailableDevice = /* GraphQL */ `
   query ListAvailableDevice($input: listAvailableDeviceInput) {
     listAvailableDevice(input: $input)
+  }
+`;
+export const listPriceMaster = /* GraphQL */ `
+  query ListPriceMaster($input: listPriceMasterInput) {
+    listPriceMaster(input: $input)
+  }
+`;
+export const listDashboard = /* GraphQL */ `
+  query ListDashboard($input: listDashboardInput) {
+    listDashboard(input: $input)
+  }
+`;
+export const listDeviceType = /* GraphQL */ `
+  query ListDeviceType($input: listDeviceTypeInput) {
+    listDeviceType(input: $input)
   }
 `;

@@ -2,6 +2,7 @@ import 'package:animate_gradient/animate_gradient.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:m80_esports/core/const_page.dart';
+import 'package:m80_esports/models/deviceType_model.dart';
 import 'package:m80_esports/models/gamingCenter_model.dart';
 import 'package:m80_esports/models/user_model.dart';
 import 'package:motion_toast/motion_toast.dart';
@@ -12,6 +13,8 @@ var h;
 UserModel? currentUser;
 Map<String, dynamic> centers = {};
 GamingCenters? center;
+DeviceTypeModel? deviceTypeModel;
+
 AnimationController? animation_controller;
 String selectedCafe = 'Vidhyaranyapura';
 List cafe = [

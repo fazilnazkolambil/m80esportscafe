@@ -37,7 +37,7 @@ class _MyHomePageState extends State<BottomNavBar> {
   Widget build(BuildContext context) {
     final List<Widget> bottomBarPages = [QrPage(), HomePage(), PriceList()];
     return Scaffold(
-      drawer: currentUser!.data.items[0].userRole == 'INTERNAL'
+      drawer: currentUser!.userRole == 'INTERNAL'
           ? Drawer(
               backgroundColor: ColorConst.backgroundColor,
               width: w * 0.7,
@@ -148,10 +148,10 @@ class _MyHomePageState extends State<BottomNavBar> {
                         backgroundImage: const AssetImage(ImageConst.logo),
                         radius: w * 0.07,
                       ),
-                      title: Text(currentUser!.data.items[0].userName,
-                          style: textStyle(true)),
+                      title:
+                          Text(currentUser!.userName, style: textStyle(true)),
                       subtitle: Text(
-                        currentUser!.data.items[0].organisationName,
+                        currentUser!.organisationName,
                         style: textStyle(false),
                       ),
                     ),
@@ -341,8 +341,8 @@ class _MyHomePageState extends State<BottomNavBar> {
               background: Center(
                   child: Padding(
                 padding: const EdgeInsets.only(top: 50),
-                child: Text(currentUser!.data.items[0].organisationName,
-                    style: textStyle(true)),
+                child:
+                    Text(currentUser!.organisationName, style: textStyle(true)),
               )),
             ),
             actions: [

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:m80_esports/core/const_page.dart';
 import 'package:m80_esports/core/globalVariables.dart';
+import 'package:m80_esports/models/deviceType_model.dart';
 
 import 'bottom_nav.dart';
 
@@ -15,19 +16,46 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  Future<void> listAvailableDevice() async {
+  Future<void> getDevices() async {
     try {
-      var operation = Amplify.API.query(
+      var getDeviceTypes = await Amplify.API.query(
           request: GraphQLRequest(
-              document:
-                  ''' query ListAvailableDevice(\$input: listAvailableDeviceInput) {
-      listAvailableDevice(input: \$input)
-    }''',
+              document: '''query ListDeviceType(\$input: listDeviceTypeInput) {
+    listDeviceType(input: \$input)
+  }''',
               variables: {
             'input': {
-              'organisation_id': currentUser!.data.items[0].organisationId,
+              'user_id': currentUser!.userId,
+              'organisation_id': currentUser!.organisationId
+            }
+          }));
+      var response = await getDeviceTypes.response;
+      Map<String, dynamic> jsonResponse = jsonDecode(response.data);
+      Map<String, dynamic> jsonDeviceType =
+          jsonDecode(jsonResponse['listDeviceType']);
+      deviceTypeModel = DeviceTypeModel.fromJson(jsonDeviceType['Data']);
+    } catch (e) {
+      print('Error : $e');
+    }
+  }
+
+  Future<void> ListDevices({required String deviceType}) async {
+    try {
+      print('ORG ID --- ${currentUser!.organisationId}');
+      print('CENTER ID --- ${centers['Data']['Items'][0]['center_id']}');
+      print('DEVICETYPE --- $deviceType');
+      var operation = Amplify.API.query(
+          request: GraphQLRequest(
+              document: ''' query ListDevices(\$input: ListDevicesInput) {
+    listDevices(input: \$input)
+  }''',
+              variables: {
+            'input': {
+              'listing_type': 'BY_CENTER',
+              'next_token': '',
+              'organisation_id': currentUser!.organisationId,
               'center_id': centers['Data']['Items'][0]['center_id'],
-              'user_id': currentUser!.data.items[0].userId,
+              'device_type': deviceType,
             }
           }));
       var response = await operation.response;
@@ -41,7 +69,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-    listAvailableDevice();
+    getDevices();
     super.initState();
   }
 
@@ -118,7 +146,9 @@ class _HomePageState extends State<HomePage> {
                                     MainAxisAlignment.spaceEvenly,
                                 children: [
                                   InkWell(
-                                    onTap: () => listAvailableDevice(),
+                                    onTap: () => ListDevices(
+                                        deviceType: deviceTypeModel!
+                                            .items[index].deviceTypeName),
                                     child: Image(
                                         image:
                                             const AssetImage(ImageConst.logo),

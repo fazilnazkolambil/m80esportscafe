@@ -10,7 +10,7 @@ export const addUserToOrganisation = /* GraphQL */ `
   mutation AddUserToOrganisation($input: addUserToOrganisationInput) {
     addUserToOrganisation(input: $input)
   }
-`;  
+`;
 export const switchOrganisation = /* GraphQL */ `
   mutation SwitchOrganisation($input: switchOrganisationInput) {
     switchOrganisation(input: $input)
@@ -64,5 +64,15 @@ export const endPlayTime = /* GraphQL */ `
 export const updatePaymentStatusInput = /* GraphQL */ `
   mutation UpdatePaymentStatusInput($input: updatePaymentStatusInput) {
     updatePaymentStatusInput(input: $input)
+  }
+`;
+export const createPriceMaster = /* GraphQL */ `
+  mutation CreatePriceMaster($input: priceMasterInput) {
+    createPriceMaster(input: $input)
+  }
+`;
+export const updatePriceMaster = /* GraphQL */ `
+  mutation UpdatePriceMaster($input: updatePriceMasterInput) {
+    updatePriceMaster(input: $input)
   }
 `;

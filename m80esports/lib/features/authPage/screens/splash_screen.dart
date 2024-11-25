@@ -48,8 +48,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return bgAnime(
-        widget: Scaffold(
+    return Scaffold(
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -62,6 +61,6 @@ class _SplashScreenState extends State<SplashScreen> {
           ],
         ),
       ),
-    ));
+    );
   }
 }

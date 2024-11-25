@@ -12,14 +12,12 @@ class QrPage extends StatefulWidget {
 class _QrPageState extends State<QrPage> {
   @override
   Widget build(BuildContext context) {
-    return bgAnime(widget: Scaffold(
+    return Scaffold(
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Image(image: AssetImage(ImageConst.logo))
-        ],
+        children: [Image(image: AssetImage(ImageConst.logo))],
       ),
-    ));
+    );
   }
 }

@@ -7,6 +7,7 @@ import 'package:m80_esports/core/const_page.dart';
 import 'package:m80_esports/features/authPage/screens/login_page.dart';
 import 'package:http/http.dart' as http;
 import 'package:m80_esports/features/homePage/screens/bottom_nav.dart';
+import 'package:m80_esports/models/gamingCenter_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 
@@ -20,7 +21,7 @@ class CafeList extends StatefulWidget {
 
 class _CafeListState extends State<CafeList> {
   // GamingCenters? centers;
-  Map<String, dynamic> centers = {};
+
   List images = [
     'assets/images/GC 1.jpg',
     'assets/images/GC 2.jpg',
@@ -144,8 +145,8 @@ class _CafeListState extends State<CafeList> {
           }));
 
       var response = await operation.response;
-      var body = jsonDecode(response.data);
-      print(body);
+
+      Map<String, dynamic> body = jsonDecode(response.data);
       setState(() {
         centers = jsonDecode(body['listGamingCenter']);
         isLoading = false;
@@ -160,7 +161,6 @@ class _CafeListState extends State<CafeList> {
 
   @override
   void initState() {
-    print('CURRENTUSER -- ${currentUser!.data.items[0].userRole}');
     listGamingCenter();
     super.initState();
   }
@@ -197,6 +197,7 @@ class _CafeListState extends State<CafeList> {
                             child: const Text('No')),
                         TextButton(
                             onPressed: () async {
+                              Amplify.Auth.signOut();
                               SharedPreferences prefs =
                                   await SharedPreferences.getInstance();
                               prefs.setBool('isLoggedIn', false);

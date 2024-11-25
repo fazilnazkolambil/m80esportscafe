@@ -1,3 +1,4 @@
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:animated_notch_bottom_bar/animated_notch_bottom_bar/animated_notch_bottom_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -6,7 +7,7 @@ import 'package:m80_esports/features/homePage/screens/home_page.dart';
 import 'package:m80_esports/features/homePage/screens/price_list.dart';
 import 'package:m80_esports/features/homePage/screens/qr_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:expandable/expandable.dart';
 import '../../../core/globalVariables.dart';
 import '../../authPage/screens/login_page.dart';
 
@@ -36,96 +37,290 @@ class _MyHomePageState extends State<BottomNavBar> {
   Widget build(BuildContext context) {
     final List<Widget> bottomBarPages = [QrPage(), HomePage(), PriceList()];
     return Scaffold(
-      drawer: Drawer(
-        backgroundColor: ColorConst.backgroundColor,
-        width: w * 0.7,
-        child: Padding(
-          padding:
-              EdgeInsets.symmetric(vertical: h * 0.03, horizontal: w * 0.03),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              ListTile(
-                leading: CircleAvatar(
-                  backgroundImage: const AssetImage(ImageConst.logo),
-                  radius: w * 0.07,
-                ),
-                title: Text('UserName', style: textStyle(true)),
-                subtitle: Text(
-                  selectedCafe,
-                  style: textStyle(false),
-                ),
-              ),
-              Text('Income', style: textStyle(true)),
-              Text('Bookings', style: textStyle(true)),
-              Text('Attendance/Presence', style: textStyle(true)),
-              Text('Directory', style: textStyle(true)),
-              Text('Settings', style: textStyle(true)),
-              const SizedBox(),
-              GestureDetector(
-                  onTap: () {
-                    showDialog(
-                      context: context,
-                      barrierDismissible: false,
-                      builder: (context) {
-                        return AlertDialog(
-                          backgroundColor: ColorConst.backgroundColor,
-                          title: Text(
-                            'Logout',
-                            style: textStyle(true),
-                          ),
-                          content: Text(
-                            'Are you sure you want to logout?',
-                            style: textStyle(false),
-                          ),
-                          actions: [
-                            TextButton(
-                                onPressed: () => Navigator.pop(context),
-                                child: const Text('No')),
-                            TextButton(
-                                onPressed: () async {
-                                  SharedPreferences prefs =
-                                      await SharedPreferences.getInstance();
-                                  prefs.setBool('isLoggedIn', false);
-                                  prefs.remove('selectedCafe');
-                                  prefs.remove('cafe');
-                                  Navigator.pushAndRemoveUntil(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              const LoginPage()),
-                                      (route) => false);
-                                },
-                                child: const Text('Yes'))
-                          ],
-                        );
-                      },
-                    );
-                  },
-                  child: Row(
-                    children: [
-                      const Icon(Icons.logout_outlined,
-                          color: ColorConst.textColor),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      Text('Sign out', style: textStyle(false)),
-                    ],
-                  )),
-              Center(
+      drawer: currentUser!.data.items[0].userRole == 'INTERNAL'
+          ? Drawer(
+              backgroundColor: ColorConst.backgroundColor,
+              width: w * 0.7,
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                    vertical: h * 0.03, horizontal: w * 0.03),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    Text('M80 Esports', style: textStyle(true)),
-                    Text('App version : $version', style: textStyle(false))
+                    ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: ColorConst.backgroundColor,
+                        backgroundImage: const AssetImage(ImageConst.logo),
+                        radius: w * 0.07,
+                      ),
+                      title: Text('UserName', style: textStyle(true)),
+                      subtitle: Text(
+                        selectedCafe,
+                        style: textStyle(false),
+                      ),
+                    ),
+                    Text('Income', style: textStyle(true)),
+                    Text('Bookings', style: textStyle(true)),
+                    Text('Attendance/Presence', style: textStyle(true)),
+                    Text('Directory', style: textStyle(true)),
+                    Text('Settings', style: textStyle(true)),
+                    const SizedBox(),
+                    GestureDetector(
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (context) {
+                              return AlertDialog(
+                                backgroundColor: ColorConst.backgroundColor,
+                                title: Text(
+                                  'Logout',
+                                  style: textStyle(true),
+                                ),
+                                content: Text(
+                                  'Are you sure you want to logout?',
+                                  style: textStyle(false),
+                                ),
+                                actions: [
+                                  TextButton(
+                                      onPressed: () => Navigator.pop(context),
+                                      child: const Text('No')),
+                                  TextButton(
+                                      onPressed: () async {
+                                        Amplify.Auth.signOut();
+                                        SharedPreferences prefs =
+                                            await SharedPreferences
+                                                .getInstance();
+                                        prefs.setBool('isLoggedIn', false);
+                                        prefs.remove('selectedCafe');
+                                        prefs.remove('cafe');
+                                        Navigator.pushAndRemoveUntil(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    const LoginPage()),
+                                            (route) => false);
+                                      },
+                                      child: const Text('Yes'))
+                                ],
+                              );
+                            },
+                          );
+                        },
+                        child: Row(
+                          children: [
+                            const Icon(Icons.logout_outlined,
+                                color: ColorConst.textColor),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            Text('Sign out', style: textStyle(false)),
+                          ],
+                        )),
+                    Center(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text('M80 Esports', style: textStyle(true)),
+                          Text('App version : $version',
+                              style: textStyle(false))
+                        ],
+                      ),
+                    )
                   ],
                 ),
-              )
-            ],
-          ),
-        ),
-      ),
+              ),
+            )
+          : Drawer(
+              backgroundColor: ColorConst.backgroundColor,
+              width: w * 0.7,
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                    vertical: h * 0.03, horizontal: w * 0.03),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: ColorConst.backgroundColor,
+                        backgroundImage: const AssetImage(ImageConst.logo),
+                        radius: w * 0.07,
+                      ),
+                      title: Text(currentUser!.data.items[0].userName,
+                          style: textStyle(true)),
+                      subtitle: Text(
+                        currentUser!.data.items[0].organisationName,
+                        style: textStyle(false),
+                      ),
+                    ),
+                    ExpandablePanel(
+                        theme: const ExpandableThemeData(
+                            useInkWell: false,
+                            iconColor: ColorConst.textColor,
+                            iconSize: 20),
+                        header: Container(
+                          height: 30,
+                          width: double.infinity,
+                          child: Text(
+                            'Cafes near you',
+                            style: textStyle(true),
+                          ),
+                        ),
+                        collapsed: const SizedBox(),
+                        expanded: Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              ListTile(
+                                leading: Icon(Icons.arrow_right),
+                                title:
+                                    Text('Bel road', style: textStyle(false)),
+                                trailing: Icon(Icons.info_outline),
+                              ),
+                              ListTile(
+                                leading: Icon(Icons.arrow_right),
+                                title: Text('Vidhyaranyapura',
+                                    style: textStyle(false)),
+                                trailing: Icon(Icons.info_outline),
+                              ),
+                            ],
+                          ),
+                        )),
+                    ExpandablePanel(
+                        theme: const ExpandableThemeData(
+                            useInkWell: false,
+                            iconColor: ColorConst.textColor,
+                            iconSize: 20),
+                        header: Container(
+                          height: 30,
+                          width: double.infinity,
+                          child: Text(
+                            'Your Bookings',
+                            style: textStyle(true),
+                          ),
+                        ),
+                        collapsed: const SizedBox(),
+                        expanded: Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              ListTile(
+                                title: Text('Monday', style: textStyle(false)),
+                                trailing:
+                                    Text('10:30 AM', style: textStyle(false)),
+                              ),
+                              ListTile(
+                                title:
+                                    Text('Wednesday', style: textStyle(false)),
+                                trailing:
+                                    Text('05:00 PM', style: textStyle(false)),
+                              ),
+                            ],
+                          ),
+                        )),
+                    ExpandablePanel(
+                        theme: const ExpandableThemeData(
+                            useInkWell: false,
+                            iconColor: ColorConst.textColor,
+                            iconSize: 20),
+                        header: Container(
+                          height: 30,
+                          width: double.infinity,
+                          child: Text(
+                            'Playing Time',
+                            style: textStyle(true),
+                          ),
+                        ),
+                        collapsed: const SizedBox(),
+                        expanded: Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              ListTile(
+                                title: Text('Tuesday', style: textStyle(false)),
+                                trailing:
+                                    Text('2:30 hrs', style: textStyle(false)),
+                              ),
+                              ListTile(
+                                title: Text('Sunday', style: textStyle(false)),
+                                trailing:
+                                    Text('1:30 hrs', style: textStyle(false)),
+                              ),
+                            ],
+                          ),
+                        )),
+                    const SizedBox(),
+                    GestureDetector(
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (context) {
+                              return AlertDialog(
+                                backgroundColor: ColorConst.backgroundColor,
+                                title: Text(
+                                  'Logout',
+                                  style: textStyle(true),
+                                ),
+                                content: Text(
+                                  'Are you sure you want to logout?',
+                                  style: textStyle(false),
+                                ),
+                                actions: [
+                                  TextButton(
+                                      onPressed: () => Navigator.pop(context),
+                                      child: const Text('No')),
+                                  TextButton(
+                                      onPressed: () async {
+                                        Amplify.Auth.signOut();
+                                        SharedPreferences prefs =
+                                            await SharedPreferences
+                                                .getInstance();
+                                        prefs.setBool('isLoggedIn', false);
+                                        prefs.remove('selectedCafe');
+                                        prefs.remove('cafe');
+                                        Navigator.pushAndRemoveUntil(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    const LoginPage()),
+                                            (route) => false);
+                                      },
+                                      child: const Text('Yes'))
+                                ],
+                              );
+                            },
+                          );
+                        },
+                        child: Row(
+                          children: [
+                            const Icon(Icons.logout_outlined,
+                                color: ColorConst.textColor),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            Text('Sign out', style: textStyle(false)),
+                          ],
+                        )),
+                    Center(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text('M80 Esports', style: textStyle(true)),
+                          Text('App version : $version',
+                              style: textStyle(false))
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ),
       body: CustomScrollView(
         controller: scrollController,
         slivers: [
@@ -146,7 +341,8 @@ class _MyHomePageState extends State<BottomNavBar> {
               background: Center(
                   child: Padding(
                 padding: const EdgeInsets.only(top: 50),
-                child: Text('Cafe : ${selectedCafe}', style: textStyle(true)),
+                child: Text(currentUser!.data.items[0].organisationName,
+                    style: textStyle(true)),
               )),
             ),
             actions: [

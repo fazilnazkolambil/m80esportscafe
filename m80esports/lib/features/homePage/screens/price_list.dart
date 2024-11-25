@@ -11,6 +11,6 @@ class PriceList extends StatefulWidget {
 class _PriceListState extends State<PriceList> {
   @override
   Widget build(BuildContext context) {
-    return bgAnime(widget: Scaffold());
+    return Scaffold();
   }
 }

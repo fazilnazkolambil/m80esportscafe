@@ -29,7 +29,7 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController phoneNumber_controller = TextEditingController();
   TextEditingController userName_controller = TextEditingController();
   TextEditingController otp_controller = TextEditingController();
-  TextEditingController email_controller = TextEditingController();
+  // TextEditingController email_controller = TextEditingController();
 
   bool otpPage = false;
   bool signUpPage = false;
@@ -160,8 +160,8 @@ class _LoginPageState extends State<LoginPage> {
           Map<String, dynamic> listOrganisations =
               jsonDecode(body['listOrganisations']);
           List items = listOrganisations['Data']['Items'];
-          // print(
-          //     "BODY ------ ${listOrganisations['Data']['Items'][0]['organisation_name']}");
+          print(
+              "FROM TEXT ------ ${listOrganisations['Data']['Items'][0]['organisation_name']}");
           setState(() {
             isLoading = false;
           });
@@ -170,81 +170,74 @@ class _LoginPageState extends State<LoginPage> {
               barrierDismissible: false,
               builder: (context) {
                 Map org = {};
-                return AlertDialog(
-                  backgroundColor: ColorConst.backgroundColor,
-                  title: Text(
-                    'Select an Organisation',
-                    style: textStyle(true),
-                  ),
-                  content: Container(
-                    decoration: BoxDecoration(
-                        border: Border.all(color: ColorConst.textColor),
-                        borderRadius: BorderRadius.circular(w * 0.03)),
-                    width: w * 0.7,
-                    child: DropdownButton(
-                      dropdownColor: ColorConst.backgroundColor,
-                      padding: EdgeInsets.symmetric(horizontal: w * 0.03),
-                      hint: Text(
-                          selectedOrg != null
-                              ? selectedOrg.toString()
-                              : "Available Organisations",
-                          style: textStyle(false)),
-                      icon: Icon(
-                        CupertinoIcons.chevron_down,
-                        size: w * 0.04,
+                return StatefulBuilder(
+                  builder: (BuildContext context,
+                      void Function(void Function()) setState) {
+                    return AlertDialog(
+                      backgroundColor: ColorConst.backgroundColor,
+                      title: Text(
+                        'Select an Organisation',
+                        style: textStyle(true),
                       ),
-                      isExpanded: true,
-                      underline: const SizedBox(),
-                      style: textStyle(false),
-                      value: selectedOrg,
-                      items: List.generate(
-                        items.length,
-                        (index) {
-                          return DropdownMenuItem(
-                            value: items[index],
-                            child: Text(items[index]['organisation_name']),
-                          );
-                        },
+                      content: Container(
+                        decoration: BoxDecoration(
+                            border: Border.all(color: ColorConst.textColor),
+                            borderRadius: BorderRadius.circular(w * 0.03)),
+                        width: w * 0.7,
+                        child: DropdownButton(
+                          dropdownColor: ColorConst.backgroundColor,
+                          padding: EdgeInsets.symmetric(horizontal: w * 0.03),
+                          hint: Text("Available Organisations",
+                              style: textStyle(false)),
+                          icon: Icon(
+                            CupertinoIcons.chevron_down,
+                            size: w * 0.04,
+                          ),
+                          isExpanded: true,
+                          underline: const SizedBox(),
+                          style: textStyle(false),
+                          value: selectedOrg,
+                          items: List.generate(
+                            items.length,
+                            (index) {
+                              return DropdownMenuItem(
+                                value: items[index],
+                                child: Text(items[index]['organisation_name']),
+                              );
+                            },
+                          ),
+                          onChanged: (newValue) {
+                            org = newValue as Map<String, dynamic>;
+                            print(
+                                "ORG NAME FROM ONCHANGED ---- ${org['organisation_name']}");
+                            print(items[0]['organisation_name'] ==
+                                org['organisation_name']);
+                            setState(() {
+                              selectedOrg = org['organisation_name'].toString();
+                            });
+                          },
+                        ),
                       ),
-                      onChanged: (newValue) {
-                        org = newValue as Map<String, dynamic>;
-                        setState(() {
-                          selectedOrg = org['organisation_name'];
-                        });
-                      },
-                    ),
-                  ),
-                  actions: [
-                    TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: const Text('Cancel')),
-                    TextButton(
-                        onPressed: () async {
-                          if (selectedOrg == null) {
-                            toastMessage(
-                                context: context,
-                                label: 'Please select a cafe!',
-                                isSuccess: false);
-                          } else {
-                            addUserToOrganisation(
-                                organisation_id: org['organisation_id']);
-                            // SharedPreferences prefs =
-                            //     await SharedPreferences.getInstance();
-                            // prefs.setBool('isLoggedIn', true);
-                            // final String userJson = jsonEncode(currentUser);
-                            // await prefs.setString('currentUser', userJson);
-                            // toastMessage(
-                            //     context: context,
-                            //     label: 'Logged in Successfully!',
-                            //     isSuccess: true);
-                            // Navigator.push(
-                            //     context,
-                            //     MaterialPageRoute(
-                            //         builder: (context) => CafeList()));
-                          }
-                        },
-                        child: const Text('Ok')),
-                  ],
+                      actions: [
+                        TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text('Cancel')),
+                        TextButton(
+                            onPressed: () async {
+                              if (selectedOrg == null) {
+                                toastMessage(
+                                    context: context,
+                                    label: 'Please select a cafe!',
+                                    isSuccess: false);
+                              } else {
+                                addUserToOrganisation(
+                                    organisation_id: org['organisation_id']);
+                              }
+                            },
+                            child: const Text('Ok')),
+                      ],
+                    );
+                  },
                 );
               });
         } catch (e) {}
@@ -263,7 +256,7 @@ class _LoginPageState extends State<LoginPage> {
       'contact_number': phoneNumber_controller.text,
       'user_name': userName_controller.text.trim(),
       'country_code': countryCode.toString().trim(),
-      "email_id": email_controller.text.trim(),
+      // "email_id": email_controller.text.trim(),
       "date_of_birth": pickedDate.toString(),
       "gender": gender
     });
@@ -272,8 +265,12 @@ class _LoginPageState extends State<LoginPage> {
           await http.post(Uri.parse(url), headers: headers, body: body);
       print('SIGNUP RESPONSE STATUS = ${response.statusCode}');
       if (response.statusCode == 200) {
+        SignInResult result = await Amplify.Auth.signIn(
+          username: '$countryCode${phoneNumber_controller.text}',
+        );
         setState(() {
           signUpPage = false;
+          otpPage = true;
           isLoading = false;
         });
       } else {
@@ -291,45 +288,6 @@ class _LoginPageState extends State<LoginPage> {
           context: context, label: 'Error during signup: $e', isSuccess: false);
     }
   }
-
-  // Future<void> addUserToOrganisationAppSync() async {
-  // final url = '$api/addUserToOrganisation';
-  // final body = jsonEncode({
-  //   // 'contact_number': phoneNumberController.text,
-  //   // 'country_code': countryCode,
-  //   'contact_number': phoneNumberController.text,
-  //   'country_code': '+91',
-  //   'organisation_id': organisation_id
-  // });
-  // final response =
-  //     await http.post(Uri.parse(url), headers: headers, body: body);
-  // if (response.statusCode == 200) {
-  //   getCurrentUserDetails();
-  // } else {
-  //   return toastMessage(
-  //       context: context, label: "Something went wrong", isSuccess: false);
-  // }
-  //   try {
-  //     var operation = Amplify.API.query(
-  //         request: GraphQLRequest(
-  //             document:
-  //                 '''mutation AddUserToOrganisation(\$input: addUserToOrganisationInput) {
-  //   addUserToOrganisation(input: \$input)
-  // }''',
-  //             variables: {
-  //           'input': {
-  //             'contact_number': '9487022519',
-  //             'organisation_id': '9b623a09-fe07-4371-859d-2c7bb77ba904'
-  //           }
-  //         }));
-  //     var response = await operation.response;
-  //     print('zzzzzzzzzzzzzzzzzzz$response');
-  //     var body = jsonDecode(response.data);
-  //     print(body);
-  //   } catch (e) {
-  //     print("error :$e");
-  //   }
-  // }
 
   Future<void> addUserToOrganisation({required String organisation_id}) async {
     try {
@@ -357,7 +315,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final phoneValidation = RegExp(r"[0-9]{10}");
-    final emailValidation = RegExp(r'^[\w-.]+@([\w-]+\.)+\w{2,4}');
+    // final emailValidation = RegExp(r'^[\w-.]+@([\w-]+\.)+\w{2,4}');
     List genders = ['Male', 'Female', 'Trans-gender', 'Other'];
     return bgAnime(
         widget: Scaffold(
@@ -373,15 +331,10 @@ class _LoginPageState extends State<LoginPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(height: h * 0.1),
-                  InkWell(
-                    onTap: () {
-                      getCurrentUserDetails();
-                    },
-                    child: Center(
-                        child: Image(
-                            image: const AssetImage(ImageConst.logo),
-                            height: h * 0.3)),
-                  ),
+                  Center(
+                      child: Image(
+                          image: const AssetImage(ImageConst.logo),
+                          height: h * 0.3)),
                   SizedBox(height: h * 0.03),
                   Text(
                       signUpPage
@@ -480,6 +433,7 @@ class _LoginPageState extends State<LoginPage> {
                             TextFormField(
                               controller: userName_controller,
                               keyboardType: TextInputType.emailAddress,
+                              textCapitalization: TextCapitalization.words,
                               style: textStyle(false),
                               validator: (value) {
                                 if (value!.isEmpty) {
@@ -509,39 +463,39 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             ),
                             SizedBox(height: h * 0.01),
-                            TextFormField(
-                              controller: email_controller,
-                              keyboardType: TextInputType.emailAddress,
-                              style: textStyle(false),
-                              autovalidateMode: AutovalidateMode.onUnfocus,
-                              validator: (email) {
-                                if (!emailValidation.hasMatch(email!)) {
-                                  return "Enter a valid Email";
-                                } else {
-                                  return null;
-                                }
-                              },
-                              decoration: InputDecoration(
-                                hintText: 'Enter your Email *',
-                                hintStyle: TextStyle(
-                                    color:
-                                        ColorConst.textColor.withOpacity(0.5)),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(w * 0.03),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.circular(w * 0.03),
-                                    borderSide: const BorderSide(
-                                        color: ColorConst.textColor)),
-                                focusedBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.circular(w * 0.03),
-                                    borderSide: const BorderSide(
-                                        color: ColorConst.textColor)),
-                              ),
-                            ),
-                            SizedBox(height: h * 0.01),
+                            // TextFormField(
+                            //   controller: email_controller,
+                            //   keyboardType: TextInputType.emailAddress,
+                            //   style: textStyle(false),
+                            //   autovalidateMode: AutovalidateMode.onUnfocus,
+                            //   validator: (email) {
+                            //     if (!emailValidation.hasMatch(email!)) {
+                            //       return "Enter a valid Email";
+                            //     } else {
+                            //       return null;
+                            //     }
+                            //   },
+                            //   decoration: InputDecoration(
+                            //     hintText: 'Enter your Email *',
+                            //     hintStyle: TextStyle(
+                            //         color:
+                            //             ColorConst.textColor.withOpacity(0.5)),
+                            //     border: OutlineInputBorder(
+                            //       borderRadius: BorderRadius.circular(w * 0.03),
+                            //     ),
+                            //     enabledBorder: OutlineInputBorder(
+                            //         borderRadius:
+                            //             BorderRadius.circular(w * 0.03),
+                            //         borderSide: const BorderSide(
+                            //             color: ColorConst.textColor)),
+                            //     focusedBorder: OutlineInputBorder(
+                            //         borderRadius:
+                            //             BorderRadius.circular(w * 0.03),
+                            //         borderSide: const BorderSide(
+                            //             color: ColorConst.textColor)),
+                            //   ),
+                            // ),
+                            //SizedBox(height: h * 0.01),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -676,13 +630,15 @@ class _LoginPageState extends State<LoginPage> {
                                               context: context,
                                               label: 'Please enter your Name!',
                                               isSuccess: false);
-                                        } else if (email_controller
-                                            .text.isEmpty) {
-                                          toastMessage(
-                                              context: context,
-                                              label: 'Please enter your Email!',
-                                              isSuccess: false);
-                                        } else if (gender == null) {
+                                        }
+                                        // else if (email_controller
+                                        //     .text.isEmpty) {
+                                        //   toastMessage(
+                                        //       context: context,
+                                        //       label: 'Please enter your Email!',
+                                        //       isSuccess: false);
+                                        // }
+                                        else if (gender == null) {
                                           toastMessage(
                                               context: context,
                                               label:
@@ -755,7 +711,7 @@ class _LoginPageState extends State<LoginPage> {
                           signUpPage = false;
                           userName_controller.clear();
                           otp_controller.clear();
-                          email_controller.clear();
+                          // email_controller.clear();
                           gender = null;
                           pickedDate = null;
                         });

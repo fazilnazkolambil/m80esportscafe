@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:m80_esports/core/const_page.dart';
@@ -12,6 +15,36 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  Future<void> listAvailableDevice() async {
+    try {
+      var operation = Amplify.API.query(
+          request: GraphQLRequest(
+              document:
+                  ''' query ListAvailableDevice(\$input: listAvailableDeviceInput) {
+      listAvailableDevice(input: \$input)
+    }''',
+              variables: {
+            'input': {
+              'organisation_id': currentUser!.data.items[0].organisationId,
+              'center_id': centers['Data']['Items'][0]['center_id'],
+              'user_id': currentUser!.data.items[0].userId,
+            }
+          }));
+      var response = await operation.response;
+      print(response.data);
+      Map<String, dynamic> deviceJson = jsonDecode(response.data);
+      print(deviceJson);
+    } catch (e) {
+      print('Error : $e');
+    }
+  }
+
+  @override
+  void initState() {
+    listAvailableDevice();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return bgAnime(
@@ -84,9 +117,13 @@ class _HomePageState extends State<HomePage> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceEvenly,
                                 children: [
-                                  Image(
-                                      image: const AssetImage(ImageConst.logo),
-                                      width: w * 0.3),
+                                  InkWell(
+                                    onTap: () => listAvailableDevice(),
+                                    child: Image(
+                                        image:
+                                            const AssetImage(ImageConst.logo),
+                                        width: w * 0.3),
+                                  ),
                                   Column(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceEvenly,

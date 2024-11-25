@@ -2,6 +2,7 @@ import 'package:animate_gradient/animate_gradient.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:m80_esports/core/const_page.dart';
+import 'package:m80_esports/models/gamingCenter_model.dart';
 import 'package:m80_esports/models/user_model.dart';
 import 'package:motion_toast/motion_toast.dart';
 
@@ -9,6 +10,8 @@ String version = '1.0.0';
 var w;
 var h;
 UserModel? currentUser;
+Map<String, dynamic> centers = {};
+GamingCenters? center;
 AnimationController? animation_controller;
 String selectedCafe = 'Vidhyaranyapura';
 List cafe = [
@@ -84,7 +87,7 @@ toastMessage({
               'Error !',
             ),
             enableAnimation: true,
-            toastDuration: Duration(seconds: 1),
+            toastDuration: Duration(seconds: 3),
             position: MotionToastPosition.center,
             description: Text(label))
         .show(context);
@@ -95,14 +98,16 @@ toastMessage({
 bgAnime({required Widget widget}) {
   return AnimateGradient(
       controller: animation_controller,
-      duration: Duration(seconds: 4),
+      duration: Duration(seconds: 3),
       primaryColors: [
-        Colors.red,
-        Colors.purple,
+        ColorConst.backgroundColor,
+        ColorConst.errorAlert,
+        Colors.green,
       ],
       secondaryColors: [
-        Colors.green,
-        Colors.blue,
+        ColorConst.buttons,
+        ColorConst.successAlert,
+        Colors.red,
       ],
       child: widget);
 }

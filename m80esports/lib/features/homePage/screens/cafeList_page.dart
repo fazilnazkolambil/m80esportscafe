@@ -28,6 +28,8 @@ class _CafeListState extends State<CafeList> {
     'assets/images/GC 3.jpg'
   ];
 
+  Map<String, dynamic> centers = {};
+
   // Future<void> listGamingCenter() async {
   //   final url = '$api/listGamingCenter';
   //   if (currentUser['Data']['Items'].isEmpty) {
@@ -88,12 +90,10 @@ class _CafeListState extends State<CafeList> {
   //         isSuccess: false);
   //     return;
   //   }
-
   //   final variables = {
   //     "organisationId": currentUser['Data']['Items'][0]['organisation_id'],
   //     "userId": currentUser['Data']['Items'][0]['user_id'],
   //   };
-
   //   try {
   //     print(GraphQLProvider.of(context).value);
   //     final client = GraphQLProvider.of(context).value;
@@ -124,7 +124,7 @@ class _CafeListState extends State<CafeList> {
   //         isSuccess: false);
   //   }
   // }
-  bool isLoading = false;
+
   listGamingCenter() async {
     setState(() {
       isLoading = true;
@@ -150,6 +150,7 @@ class _CafeListState extends State<CafeList> {
       print(body['listGamingCenter']);
       setState(() {
         centers = jsonDecode(body['listGamingCenter']);
+        print("CENTERS ======= $centers");
         isLoading = false;
       });
     } catch (e) {
@@ -251,16 +252,8 @@ class _CafeListState extends State<CafeList> {
                         itemBuilder: (context, index) {
                           return GestureDetector(
                             onTap: () async {
-                              // SharedPreferences prefs =
-                              //     await SharedPreferences.getInstance();
-                              // prefs.setBool('isLoggedIn', false);
-                              // prefs.remove('selectedCafe');
-                              // prefs.remove('cafe');
-                              // cafe.clear();
-                              // setState(() {
-                              //   selectedCafe = gamingCafe[index].keys.first;
-                              //   cafe.add(gamingCafe[index]);
-                              // });
+                              center = GamingCenters.fromJson(
+                                  centers['Data']['Items'][index]);
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
@@ -316,14 +309,14 @@ class _CafeListState extends State<CafeList> {
                                               overflow: TextOverflow.ellipsis,
                                               maxLines: 1,
                                             ),
-                                            Text(
-                                              centers['Data']['Items'][index]
-                                                      ['manager_details'][0]
-                                                  ['contact_number'],
-                                              style: textStyle(false),
-                                              overflow: TextOverflow.ellipsis,
-                                              maxLines: 1,
-                                            ),
+                                            // Text(
+                                            //   centers['Data']['Items'][index]
+                                            //           ['manager_details'][0]
+                                            //       ['contact_number'],
+                                            //   style: textStyle(false),
+                                            //   overflow: TextOverflow.ellipsis,
+                                            //   maxLines: 1,
+                                            // ),
                                           ],
                                         ),
                                       ),
@@ -360,7 +353,7 @@ class _CafeListState extends State<CafeList> {
               )
             ],
           ),
-          if (isLoading) loadingWidget()
+          if (isLoading) loadingScreen()
         ],
       ),
     ));

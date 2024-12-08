@@ -4,48 +4,7 @@
 
 import 'dart:convert';
 
-GamingCenters pokedexFromJson(String str) =>
-    GamingCenters.fromJson(json.decode(str));
-
-String pokedexToJson(GamingCenters data) => json.encode(data.toJson());
-
 class GamingCenters {
-  String status;
-  Data data;
-
-  GamingCenters({
-    required this.status,
-    required this.data,
-  });
-
-  factory GamingCenters.fromJson(Map<String, dynamic> json) => GamingCenters(
-        status: json["Status"],
-        data: Data.fromJson(json["Data"]),
-      );
-
-  Map<String, dynamic> toJson() => {
-        "Status": status,
-        "Data": data.toJson(),
-      };
-}
-
-class Data {
-  List<Item> items;
-
-  Data({
-    required this.items,
-  });
-
-  factory Data.fromJson(Map<String, dynamic> json) => Data(
-        items: List<Item>.from(json["Items"].map((x) => Item.fromJson(x))),
-      );
-
-  Map<String, dynamic> toJson() => {
-        "Items": List<dynamic>.from(items.map((x) => x.toJson())),
-      };
-}
-
-class Item {
   String centerStatus;
   String centerCode;
   String centerZipCode;
@@ -57,7 +16,7 @@ class Item {
   String centerId;
   int? discount;
 
-  Item({
+  GamingCenters({
     required this.centerStatus,
     required this.centerCode,
     required this.centerZipCode,
@@ -70,7 +29,7 @@ class Item {
     this.discount,
   });
 
-  factory Item.fromJson(Map<String, dynamic> json) => Item(
+  factory GamingCenters.fromJson(Map<String, dynamic> json) => GamingCenters(
         centerStatus: json["center_status"],
         centerCode: json["center_code"],
         centerZipCode: json["center_zip_code"],

@@ -11,9 +11,10 @@ String version = '1.0.0';
 var w;
 var h;
 UserModel? currentUser;
-Map<String, dynamic> centers = {};
+// Map<String, dynamic> centers = {};
 GamingCenters? center;
-DeviceTypeModel? deviceTypeModel;
+
+bool isLoading = false;
 
 AnimationController? animation_controller;
 String selectedCafe = 'Vidhyaranyapura';
@@ -105,18 +106,18 @@ bgAnime({required Widget widget}) {
       primaryColors: [
         ColorConst.backgroundColor,
         ColorConst.errorAlert,
-        Colors.green,
+        ColorConst.successAlert
       ],
       secondaryColors: [
         ColorConst.buttons,
         ColorConst.successAlert,
-        Colors.red,
+        ColorConst.errorAlert
       ],
       child: widget);
 }
 
 /// LOADING WIDGET
-Widget loadingWidget() {
+Widget loadingScreen() {
   return GestureDetector(
     onTap: () {},
     behavior: HitTestBehavior.opaque,

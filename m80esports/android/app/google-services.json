@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "285103521442",
+    "project_id": "m80esports-58416",
+    "storage_bucket": "m80esports-58416.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:285103521442:android:307b20f7a5a92ee9ce61fb",
+        "android_client_info": {
+          "package_name": "com.example.m80esports"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBQmFeTrtoQSmwoS1qGt7E6jgUU0Tp1nX8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

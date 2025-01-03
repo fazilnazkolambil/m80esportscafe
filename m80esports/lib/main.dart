@@ -1,16 +1,23 @@
 import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:m80_esports/amplifyconfiguration.dart';
 import 'package:m80_esports/core/const_page.dart';
 import 'package:m80_esports/features/authPage/screens/splash_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:m80_esports/features/homePage/screens/qr_page.dart';
+import 'package:m80_esports/firebase_options.dart';
 import 'core/globalVariables.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const MyApp());
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  runApp(ProviderScope(child: const MyApp()));
 }
 
 class MyApp extends StatefulWidget {

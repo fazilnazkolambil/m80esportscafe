@@ -19,6 +19,8 @@ class ColorConst {
 
 class ImageConst {
   static const logo = 'assets/images/M80_logo.png';
+  static const controller = 'assets/images/controller.png';
+  static const beverages = 'assets/images/beverages.png';
 }
 
 class IconConst {

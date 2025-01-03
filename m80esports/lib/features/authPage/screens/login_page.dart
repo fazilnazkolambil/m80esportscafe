@@ -2,10 +2,12 @@ import 'dart:convert';
 
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:animate_gradient/animate_gradient.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:m80_esports/core/const_page.dart';
@@ -17,14 +19,14 @@ import '../../../core/globalVariables.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_holo_date_picker/flutter_holo_date_picker.dart';
 
-class LoginPage extends StatefulWidget {
+class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  ConsumerState<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginPageState extends ConsumerState<LoginPage> {
   final formKey = GlobalKey<FormState>();
 
   TextEditingController phoneNumber_controller = TextEditingController();
@@ -40,62 +42,42 @@ class _LoginPageState extends State<LoginPage> {
   String? gender;
   DateTime? pickedDate;
 
-  /// 1st function
   Future<void> userlogin() async {
-    setState(() {
-      isLoading = true;
-    });
+    ref.read(loadingProvider.notifier).update((state) => true);
     try {
       await Amplify.Auth.signOut();
       SignInResult result = await Amplify.Auth.signIn(
         username: '$countryCode${phoneNumber_controller.text}',
       );
-      //log("result : ${result.isSignedIn}");
-      //log("result : ${result.nextStep?.signInStep}");
-      // if (result.nextStep?.signInStep ==
-      //         'CONFIRM_SIGN_IN_WITH_CUSTOM_CHALLENGE' ||
-      //     result.nextStep?.signInStep ==
-      //         AuthSignInStep.confirmSignInWithCustomChallenge) {
-      // AppUser.userPhonenumber = phoneNumber;
+      ref.read(loadingProvider.notifier).update((state) => false);
       setState(() {
         otpPage = true;
-        isLoading = false;
       });
     } on AuthException catch (e) {
       if (e.message.trim() == "Sign in failed" ||
           e.message.trim() == "Error: NOT_AUTHORIZED : Kindly Sigup") {
+        ref.read(loadingProvider.notifier).update((state) => false);
         setState(() {
           signUpPage = true;
-          isLoading = false;
         });
       }
     } finally {
-      setState(() {
-        isLoading = false;
-      });
+      ref.read(loadingProvider.notifier).update((state) => false);
     }
   }
 
   Future<void> verifyOTP() async {
-    setState(() {
-      isLoading = true;
-    });
+    ref.read(loadingProvider.notifier).update((state) => true);
     try {
       var res = await Amplify.Auth.confirmSignIn(
           confirmationValue: otp_controller.text);
-      //log("AMplify result : ${res.isSignedIn}");
-      //log("AMplify result : ${res.nextStep?.signInStep}");
       if (res.isSignedIn == true) {
         getCurrentUserDetails();
-        setState(() {
-          isLoading = false;
-        });
+        ref.read(loadingProvider.notifier).update((state) => false);
       } else {
         toastMessage(
             context: context, label: 'Incorrect OTP', isSuccess: false);
-        setState(() {
-          isLoading = false;
-        });
+        ref.read(loadingProvider.notifier).update((state) => false);
       }
     } catch (err) {
       toastMessage(
@@ -103,9 +85,7 @@ class _LoginPageState extends State<LoginPage> {
         label: err.toString(),
         isSuccess: false,
       );
-      setState(() {
-        isLoading = false;
-      });
+      ref.read(loadingProvider.notifier).update((state) => false);
     }
   }
 
@@ -140,17 +120,15 @@ class _LoginPageState extends State<LoginPage> {
             isSuccess: true);
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => CafeList()));
-        setState(() {
-          isLoading = false;
-        });
+        ref.read(loadingProvider.notifier).update((state) => false);
       } else {
         try {
           var orgOperations = Amplify.API.query(
             request: GraphQLRequest(
               document:
                   '''query ListOrganisations(\$input: ListOrganisationsInput) {
-    listOrganisations(input: \$input)
-  }''',
+            listOrganisations(input: \$input)
+          }''',
               variables: {
                 "input": {
                   // next_token: ""
@@ -163,9 +141,7 @@ class _LoginPageState extends State<LoginPage> {
           Map<String, dynamic> listOrganisations =
               jsonDecode(body['listOrganisations']);
           List items = listOrganisations['Data']['Items'];
-          setState(() {
-            isLoading = false;
-          });
+          ref.read(loadingProvider.notifier).update((state) => false);
           showDialog(
               context: context,
               barrierDismissible: false,
@@ -250,9 +226,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> userSignUp() async {
-    setState(() {
-      isLoading = true;
-    });
+    ref.read(loadingProvider.notifier).update((state) => true);
     final url = '$api/UserSignUp';
     final body = jsonEncode({
       'contact_number': phoneNumber_controller.text,
@@ -269,22 +243,18 @@ class _LoginPageState extends State<LoginPage> {
         SignInResult result = await Amplify.Auth.signIn(
           username: '$countryCode${phoneNumber_controller.text}',
         );
+        ref.read(loadingProvider.notifier).update((state) => false);
         setState(() {
           signUpPage = false;
           otpPage = true;
-          isLoading = false;
         });
       } else {
-        setState(() {
-          isLoading = false;
-        });
+        ref.read(loadingProvider.notifier).update((state) => false);
         toastMessage(
             context: context, label: "Something went wrong", isSuccess: false);
       }
     } catch (e) {
-      setState(() {
-        isLoading = false;
-      });
+      ref.read(loadingProvider.notifier).update((state) => false);
       toastMessage(
           context: context, label: 'Error during signup: $e', isSuccess: false);
     }
@@ -292,9 +262,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> addUserToOrganisation({required String organisation_id}) async {
     try {
-      setState(() {
-        isLoading = true;
-      });
+      ref.read(loadingProvider.notifier).update((state) => true);
       var operation = Amplify.API.mutate(
           request: GraphQLRequest(
               document:
@@ -311,9 +279,7 @@ class _LoginPageState extends State<LoginPage> {
       var body = jsonDecode(response.data);
       getCurrentUserDetails();
     } catch (e) {
-      setState(() {
-        isLoading = false;
-      });
+      ref.read(loadingProvider.notifier).update((state) => false);
       return toastMessage(
           context: context, label: 'Error : $e', isSuccess: false);
     }
@@ -321,6 +287,7 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final isLoading = ref.watch(loadingProvider);
     final phoneValidation = RegExp(r"[0-9]{10}");
     // final emailValidation = RegExp(r'^[\w-.]+@([\w-]+\.)+\w{2,4}');
     List genders = ['Male', 'Female', 'Trans-gender', 'Other'];

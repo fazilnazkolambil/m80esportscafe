@@ -1,25 +1,22 @@
-import 'dart:convert';
-
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:m80_esports/core/const_page.dart';
 import 'package:m80_esports/features/authPage/screens/login_page.dart';
-import 'package:http/http.dart' as http;
 import 'package:m80_esports/features/homePage/screens/bottom_nav.dart';
-import 'package:m80_esports/models/gamingCenter_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:graphql_flutter/graphql_flutter.dart';
 
 import '../../../core/globalVariables.dart';
 
-class CafeList extends StatefulWidget {
+class CafeList extends ConsumerStatefulWidget {
   const CafeList({super.key});
   @override
-  State<CafeList> createState() => _CafeListState();
+  ConsumerState<CafeList> createState() => _CafeListState();
 }
 
-class _CafeListState extends State<CafeList> {
+class _CafeListState extends ConsumerState<CafeList> {
   // GamingCenters? centers;
 
   List images = [
@@ -28,7 +25,7 @@ class _CafeListState extends State<CafeList> {
     'assets/images/GC 3.jpg'
   ];
 
-  Map<String, dynamic> centers = {};
+  List centers = [];
 
   // Future<void> listGamingCenter() async {
   //   final url = '$api/listGamingCenter';
@@ -125,50 +122,66 @@ class _CafeListState extends State<CafeList> {
   //   }
   // }
 
-  listGamingCenter() async {
-    setState(() {
-      isLoading = true;
-    });
-    try {
-      var operation = Amplify.API.query(
-          request: GraphQLRequest(
-              document:
-                  '''query listGamingCenter(\$input: ListGamingCenterInput) {
-    listGamingCenter(input: \$input)
-  }''',
-              variables: {
-            'input': {
-              'organisation_id': currentUser!.organisationId,
-              'user_id': currentUser!.userId,
-              // 'next_token': ''
-            }
-          }));
+  // listGamingCenter() async {
+  //   setState(() {
+  //     isLoading = true;
+  //   });
+  //   try {
+  //     var operation = Amplify.API.query(
+  //         request: GraphQLRequest(
+  //             document:
+  //                 '''query listGamingCenter(\$input: ListGamingCenterInput) {
+  //   listGamingCenter(input: \$input)
+  // }''',
+  //             variables: {
+  //           'input': {
+  //             'organisation_id': currentUser!.organisationId,
+  //             'user_id': currentUser!.userId,
+  //             // 'next_token': ''
+  //           }
+  //         }));
 
-      var response = await operation.response;
+  //     var response = await operation.response;
 
-      Map<String, dynamic> body = jsonDecode(response.data);
-      print(body['listGamingCenter']);
+  //     Map<String, dynamic> body = jsonDecode(response.data);
+  //     print(body['listGamingCenter']);
+  //     setState(() {
+  //       centers = jsonDecode(body['listGamingCenter']);
+  //       print("CENTERS ======= $centers");
+  //       isLoading = false;
+  //     });
+  //   } catch (e) {
+  //     toastMessage(context: context, label: 'Error : $e', isSuccess: false);
+  //     setState(() {
+  //       isLoading = false;
+  //     });
+  //   }
+  // }
+
+  Future<void> getCafe() async {
+    var data = await FirebaseFirestore.instance
+        .collection('Organisations')
+        .doc('m80Esports')
+        .collection('cafes')
+        .get();
+    for (int i = 0; i < data.docs.length; i++) {
       setState(() {
-        centers = jsonDecode(body['listGamingCenter']);
-        print("CENTERS ======= $centers");
-        isLoading = false;
-      });
-    } catch (e) {
-      toastMessage(context: context, label: 'Error : $e', isSuccess: false);
-      setState(() {
-        isLoading = false;
+        centers.add(data.docs[i]);
       });
     }
   }
 
   @override
   void initState() {
-    listGamingCenter();
+    selectedCafe = '';
+    deviceCategory.clear();
+    getCafe();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    final isLoading = ref.watch(loadingProvider);
     return bgAnime(
         widget: Scaffold(
       appBar: AppBar(
@@ -248,16 +261,33 @@ class _CafeListState extends State<CafeList> {
                       ))
                     : ListView.builder(
                         physics: BouncingScrollPhysics(),
-                        itemCount: centers['Data']['Items'].length,
+                        itemCount: centers.length,
                         itemBuilder: (context, index) {
                           return GestureDetector(
                             onTap: () async {
-                              center = GamingCenters.fromJson(
-                                  centers['Data']['Items'][index]);
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => BottomNavBar()));
+                              selectedCafe = centers[index]['label'];
+                              if (deviceCategory.isEmpty) {
+                                var data = await FirebaseFirestore.instance
+                                    .collection('Organisations')
+                                    .doc('m80Esports')
+                                    .collection('cafes')
+                                    .doc(selectedCafe)
+                                    .collection('devices')
+                                    .where('deleted', isEqualTo: false)
+                                    .get();
+                                for (var device in data.docs) {
+                                  deviceCategory.add(device);
+                                }
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => BottomNavBar()));
+                              } else {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => BottomNavBar()));
+                              }
                             },
                             child: Stack(
                               children: [
@@ -271,9 +301,7 @@ class _CafeListState extends State<CafeList> {
                                         BorderRadius.circular(w * 0.05),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: centers['Data']['Items'][index]
-                                                    ['center_status'] ==
-                                                'ACTIVE'
+                                        color: centers[index]['status']
                                             ? ColorConst.successAlert
                                                 .withOpacity(0.7)
                                             : ColorConst.errorAlert
@@ -296,18 +324,16 @@ class _CafeListState extends State<CafeList> {
                                               MainAxisAlignment.spaceEvenly,
                                           children: [
                                             Text(
-                                              centers['Data']['Items'][index]
-                                                  ['center_name'],
+                                              centers[index]['label'],
                                               style: textStyle(true),
                                               overflow: TextOverflow.ellipsis,
                                               maxLines: 1,
                                             ),
                                             Text(
-                                              centers['Data']['Items'][index]
-                                                  ['center_address'],
+                                              centers[index]['address'],
                                               style: textStyle(false),
                                               overflow: TextOverflow.ellipsis,
-                                              maxLines: 1,
+                                              maxLines: 3,
                                             ),
                                             // Text(
                                             //   centers['Data']['Items'][index]
@@ -323,9 +349,7 @@ class _CafeListState extends State<CafeList> {
                                     ],
                                   ),
                                 ),
-                                if (centers['Data']['Items'][index]
-                                        ['discount'] !=
-                                    null)
+                                if (centers[index]['discount'] != 0)
                                   Positioned(
                                     top: 0,
                                     left: 0,
@@ -341,7 +365,7 @@ class _CafeListState extends State<CafeList> {
                                         ),
                                       ),
                                       child: Text(
-                                          '${centers['Data']['Items'][index]['discount']}% OFF',
+                                          '${centers[index]['discount']}% OFF',
                                           style: textStyle(false)),
                                     ),
                                   ),

@@ -173,8 +173,6 @@ class _CafeListState extends ConsumerState<CafeList> {
 
   @override
   void initState() {
-    selectedCafe = '';
-    deviceCategory.clear();
     getCafe();
     super.initState();
   }
@@ -265,7 +263,10 @@ class _CafeListState extends ConsumerState<CafeList> {
                         itemBuilder: (context, index) {
                           return GestureDetector(
                             onTap: () async {
-                              selectedCafe = centers[index]['label'];
+                              setState(() {
+                                selectedCafe = centers[index]['label'];
+                                deviceCategory.clear();
+                              });
                               if (deviceCategory.isEmpty) {
                                 var data = await FirebaseFirestore.instance
                                     .collection('Organisations')

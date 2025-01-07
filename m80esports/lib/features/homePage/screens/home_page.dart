@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -129,7 +128,7 @@ class ListDevices extends StatelessWidget {
                         .doc('m80Esports')
                         .collection('cafes')
                         .doc(selectedCafe)
-                        .collection('foodItems')
+                        .collection('beverages')
                         .where('totalQuantity', isGreaterThan: 0)
                         .get();
                     for (var doc in querySnapshot.docs) {
@@ -418,7 +417,8 @@ class ListDevices extends StatelessWidget {
                                                                             context,
                                                                             items,
                                                                             device.deviceName,
-                                                                            invoiceId);
+                                                                            invoiceId,
+                                                                            existingExtras);
                                                                       },
                                                                     );
                                                                     Navigator.pop(
@@ -677,8 +677,8 @@ class ListDevices extends StatelessWidget {
   }
 }
 
-Widget _buildExtraItemsDialog(
-    BuildContext context, List items, String deviceName, String invoiceId) {
+Widget _buildExtraItemsDialog(BuildContext context, List items,
+    String deviceName, String invoiceId, List existingItems) {
   return AlertDialog(
     backgroundColor: ColorConst.backgroundColor,
     title: Text('Select drinks', style: textStyle(true)),
@@ -740,6 +740,7 @@ Widget _buildExtraItemsDialog(
       TextButton(
         onPressed: () async {
           List selectedItems = [];
+          // List existingExtras = [];
           for (var a in items) {
             if (a['quantity'] > 0) {
               selectedItems.add({
@@ -764,16 +765,37 @@ Widget _buildExtraItemsDialog(
             'extras': selectedItems,
             'extraAmount': extraAmount,
           });
-          for (var a in items) {
-            FirebaseFirestore.instance
-                .collection('Organisations')
-                .doc('m80Esports')
-                .collection('cafes')
-                .doc(selectedCafe)
-                .collection('foodItems')
-                .doc(a['name'])
-                .update(
-                    {'totalQuantity': FieldValue.increment(-(a['quantity']))});
+          for (var a in selectedItems) {
+            if (existingItems.isEmpty) {
+              FirebaseFirestore.instance
+                  .collection('Organisations')
+                  .doc('m80Esports')
+                  .collection('cafes')
+                  .doc(selectedCafe)
+                  .collection('beverages')
+                  .doc(a['name'])
+                  .update({
+                'totalQuantity': FieldValue.increment(-(a['quantity'])),
+                'sold': FieldValue.increment((a['quantity']))
+              });
+            } else {
+              final existingExtras = existingItems
+                  .where((element) => element['name'] == a['name'])
+                  .toList();
+              int selectedQuantity =
+                  a['quantity'] - existingExtras.first['quantity'];
+              FirebaseFirestore.instance
+                  .collection('Organisations')
+                  .doc('m80Esports')
+                  .collection('cafes')
+                  .doc(selectedCafe)
+                  .collection('beverages')
+                  .doc(a['name'])
+                  .update({
+                'totalQuantity': FieldValue.increment(-selectedQuantity),
+                'sold': FieldValue.increment(selectedQuantity)
+              });
+            }
           }
           Navigator.pop(context, extraAmount);
         },

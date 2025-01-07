@@ -135,6 +135,7 @@ class _EditDeviceState extends State<EditDevice> {
                       width: w * 0.5,
                       child: TextField(
                         controller: _devicePrice,
+                        keyboardType: TextInputType.numberWithOptions(),
                         style: textStyle(true),
                         decoration: InputDecoration(
                             border: OutlineInputBorder(),
@@ -186,6 +187,7 @@ class _EditDeviceState extends State<EditDevice> {
                       width: w * 0.5,
                       child: TextField(
                         controller: _capacityPrice,
+                        keyboardType: TextInputType.numberWithOptions(),
                         readOnly: capacity > 1 ? false : true,
                         style: textStyle(true),
                         decoration: InputDecoration(

@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:m80_esports/core/firebaseProvider.dart';
 import 'package:m80_esports/core/globalVariables.dart';
+import 'package:m80_esports/models/beverages_model.dart';
+import 'package:m80_esports/models/deviceCategory_model.dart';
 import 'package:m80_esports/models/devices_model.dart';
 import 'package:m80_esports/models/invoice_model.dart';
 
@@ -63,5 +65,25 @@ class HomepageRepository {
         .snapshots()
         .map((event) =>
             event.docs.map((e) => DeviceModel.fromJson(e.data())).toList());
+  }
+
+  Stream<List<BeveragesModel>> getAllBeverages() {
+    return _cafe.doc(selectedCafe).collection('beverages').snapshots().map(
+        (event) =>
+            event.docs.map((e) => BeveragesModel.fromJson(e.data())).toList());
+  }
+
+  Stream<List<DeviceCategoryModel>> getDeviceCategory() {
+    return FirebaseFirestore.instance
+        .collection('Organisations')
+        .doc('m80Esports')
+        .collection('cafes')
+        .doc(selectedCafe)
+        .collection('devices')
+        .where('deleted', isEqualTo: false)
+        .snapshots()
+        .map((event) => event.docs
+            .map((e) => DeviceCategoryModel.fromJson(e.data()))
+            .toList());
   }
 }

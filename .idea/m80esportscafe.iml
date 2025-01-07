@@ -90,6 +90,18 @@
       <excludeFolder url="file://$MODULE_DIR$/m80esports/windows/flutter/ephemeral/.plugin_symlinks/shared_preferences_windows/example/.dart_tool" />
       <excludeFolder url="file://$MODULE_DIR$/m80esports/windows/flutter/ephemeral/.plugin_symlinks/shared_preferences_windows/example/.pub" />
       <excludeFolder url="file://$MODULE_DIR$/m80esports/windows/flutter/ephemeral/.plugin_symlinks/shared_preferences_windows/example/build" />
+      <excludeFolder url="file://$MODULE_DIR$/m80esports/windows/flutter/ephemeral/.plugin_symlinks/cloud_firestore/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/m80esports/windows/flutter/ephemeral/.plugin_symlinks/cloud_firestore/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/m80esports/windows/flutter/ephemeral/.plugin_symlinks/cloud_firestore/build" />
+      <excludeFolder url="file://$MODULE_DIR$/m80esports/windows/flutter/ephemeral/.plugin_symlinks/cloud_firestore/example/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/m80esports/windows/flutter/ephemeral/.plugin_symlinks/cloud_firestore/example/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/m80esports/windows/flutter/ephemeral/.plugin_symlinks/cloud_firestore/example/build" />
+      <excludeFolder url="file://$MODULE_DIR$/m80esports/windows/flutter/ephemeral/.plugin_symlinks/firebase_core/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/m80esports/windows/flutter/ephemeral/.plugin_symlinks/firebase_core/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/m80esports/windows/flutter/ephemeral/.plugin_symlinks/firebase_core/build" />
+      <excludeFolder url="file://$MODULE_DIR$/m80esports/windows/flutter/ephemeral/.plugin_symlinks/firebase_core/example/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/m80esports/windows/flutter/ephemeral/.plugin_symlinks/firebase_core/example/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/m80esports/windows/flutter/ephemeral/.plugin_symlinks/firebase_core/example/build" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

@@ -282,81 +282,122 @@ class _DevicePageState extends State<DevicePage> {
                                                               devices.length,
                                                           itemBuilder:
                                                               (context, index) {
-                                                            return InkWell(
-                                                              onTap: () {
-                                                                _category
-                                                                    .text = devices[
-                                                                        index][
-                                                                    'deviceType'];
-                                                                _discount
-                                                                    .text = devices[
-                                                                            index]
+                                                            return ListTile(
+                                                              title: Row(
+                                                                children: [
+                                                                  Text(
+                                                                    devices[index]
                                                                         [
-                                                                        'discount']
-                                                                    .toString();
-                                                                edit = true;
-                                                                setState(() {});
-                                                              },
-                                                              child: ListTile(
-                                                                title: Text(
-                                                                  devices[index]
+                                                                        'deviceType'],
+                                                                    style: textStyle(
+                                                                        false),
+                                                                  ),
+                                                                  SizedBox(
+                                                                    width: w *
+                                                                        0.03,
+                                                                  ),
+                                                                  if (devices[
+                                                                          index]
                                                                       [
-                                                                      'deviceType'],
-                                                                  style:
-                                                                      textStyle(
-                                                                          false),
-                                                                ),
-                                                                subtitle: Text(
-                                                                  'Discount : ${devices[index]['discount']}%',
-                                                                  style:
-                                                                      textStyle(
-                                                                          false),
-                                                                ),
-                                                                trailing: InkWell(
-                                                                    onTap: () {
-                                                                      showDialog(
-                                                                        context:
-                                                                            context,
-                                                                        barrierDismissible:
-                                                                            false,
-                                                                        builder:
-                                                                            (context) {
-                                                                          return AlertDialog(
-                                                                            backgroundColor:
-                                                                                ColorConst.backgroundColor,
-                                                                            title:
-                                                                                Text(
-                                                                              devices[index]['deleted'] ? 'Are you sure you want to restore this type?' : 'Are you sure you want to delete this type?',
-                                                                              style: textStyle(true),
-                                                                              textAlign: TextAlign.center,
-                                                                            ),
-                                                                            actions: [
-                                                                              TextButton(onPressed: () => Navigator.pop(context), child: const Text('No')),
-                                                                              TextButton(
-                                                                                  onPressed: () async {
-                                                                                    devices[index].reference.update({
-                                                                                      'deleted': devices[index]['deleted'] ? false : true
-                                                                                    });
-                                                                                    Navigator.pop(context);
-                                                                                  },
-                                                                                  child: const Text('Yes'))
-                                                                            ],
-                                                                          );
-                                                                        },
-                                                                      );
-                                                                    },
-                                                                    child: devices[index]['deleted']
-                                                                        ? Icon(
-                                                                            Icons.restore,
-                                                                            color:
-                                                                                ColorConst.successAlert,
-                                                                          )
-                                                                        : Icon(
-                                                                            Icons.delete_outline_rounded,
-                                                                            color:
-                                                                                ColorConst.errorAlert,
-                                                                          )),
+                                                                      'deleted'])
+                                                                    Text(
+                                                                      '(deleted)',
+                                                                      style: TextStyle(
+                                                                          color: ColorConst
+                                                                              .errorAlert,
+                                                                          fontSize:
+                                                                              w * 0.03),
+                                                                    ),
+                                                                ],
                                                               ),
+                                                              subtitle: Text(
+                                                                'Discount : ${devices[index]['discount']}%',
+                                                                style:
+                                                                    textStyle(
+                                                                        false),
+                                                              ),
+                                                              trailing:
+                                                                  PopupMenuButton(
+                                                                      color: ColorConst
+                                                                          .backgroundColor,
+                                                                      itemBuilder:
+                                                                          (context) {
+                                                                        return [
+                                                                          if (!devices[index]
+                                                                              [
+                                                                              'deleted'])
+                                                                            PopupMenuItem(
+                                                                                onTap: () {
+                                                                                  _category.text = devices[index]['deviceType'];
+                                                                                  _discount.text = devices[index]['discount'].toString();
+                                                                                  edit = true;
+                                                                                  setState(() {});
+                                                                                },
+                                                                                textStyle: textStyle(false),
+                                                                                child: Row(
+                                                                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                                                  children: [
+                                                                                    Icon(
+                                                                                      Icons.edit_rounded,
+                                                                                      color: ColorConst.successAlert,
+                                                                                    ),
+                                                                                    Text(
+                                                                                      'Edit',
+                                                                                      style: textStyle(false),
+                                                                                    )
+                                                                                  ],
+                                                                                )),
+                                                                          PopupMenuItem(
+                                                                              onTap: () {
+                                                                                showDialog(
+                                                                                  context: context,
+                                                                                  barrierDismissible: false,
+                                                                                  builder: (context) {
+                                                                                    return AlertDialog(
+                                                                                      backgroundColor: ColorConst.backgroundColor,
+                                                                                      title: Text(
+                                                                                        devices[index]['deleted'] ? 'Are you sure you want to restore this type?' : 'Are you sure you want to delete this type?',
+                                                                                        style: textStyle(true),
+                                                                                        textAlign: TextAlign.center,
+                                                                                      ),
+                                                                                      actions: [
+                                                                                        TextButton(onPressed: () => Navigator.pop(context), child: const Text('No')),
+                                                                                        TextButton(
+                                                                                            onPressed: () async {
+                                                                                              devices[index].reference.update({
+                                                                                                'deleted': devices[index]['deleted'] ? false : true
+                                                                                              });
+                                                                                              Navigator.pop(context);
+                                                                                            },
+                                                                                            child: const Text('Yes'))
+                                                                                      ],
+                                                                                    );
+                                                                                  },
+                                                                                );
+                                                                              },
+                                                                              textStyle: textStyle(false),
+                                                                              child: Row(
+                                                                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                                                children: [
+                                                                                  devices[index]['deleted']
+                                                                                      ? Icon(Icons.restore, color: ColorConst.successAlert)
+                                                                                      : Icon(
+                                                                                          Icons.delete_rounded,
+                                                                                          color: ColorConst.errorAlert,
+                                                                                        ),
+                                                                                  Text(
+                                                                                    devices[index]['deleted'] ? 'restore' : 'Delete',
+                                                                                    style: textStyle(false),
+                                                                                  )
+                                                                                ],
+                                                                              )),
+                                                                        ];
+                                                                      },
+                                                                      icon: Icon(
+                                                                          Icons
+                                                                              .more_vert_sharp,
+                                                                          color:
+                                                                              ColorConst.textColor)),
                                                             );
                                                           },
                                                         ),
@@ -375,7 +416,7 @@ class _DevicePageState extends State<DevicePage> {
                                         });
                                         Navigator.pop(context);
                                       },
-                                      child: Text('Done'))
+                                      child: Text('Back'))
                                 ],
                               ));
                     },
@@ -684,7 +725,9 @@ class _DevicePageState extends State<DevicePage> {
                                           _deviceName.text.trim().toUpperCase())
                                       .set(DeviceModel(
                                               capacity: capacity,
-                                              deviceName: _deviceName.text,
+                                              deviceName: _deviceName.text
+                                                  .trim()
+                                                  .toUpperCase(),
                                               price: double.parse(
                                                   _devicePrice.text),
                                               startTime: DateTime.now(),
@@ -739,7 +782,7 @@ class _DevicePageState extends State<DevicePage> {
                             });
                             Navigator.pop(context);
                           },
-                          child: Text('Done'))
+                          child: Text('Back'))
                     ],
                   ),
                 );

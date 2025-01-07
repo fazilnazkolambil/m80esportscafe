@@ -3,6 +3,7 @@ import 'package:animated_notch_bottom_bar/animated_notch_bottom_bar/animated_not
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:m80_esports/core/const_page.dart';
+import 'package:m80_esports/features/homePage/screens/bevarages.dart';
 import 'package:m80_esports/features/homePage/screens/device_page.dart';
 import 'package:m80_esports/features/homePage/screens/home_page.dart';
 import 'package:m80_esports/features/homePage/screens/income_page.dart';
@@ -29,12 +30,6 @@ class _MyHomePageState extends State<BottomNavBar> {
       NotchBottomBarController(index: 1);
 
   int maxCount = 3;
-
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -82,7 +77,8 @@ class _MyHomePageState extends State<BottomNavBar> {
                       MaterialPageRoute(builder: (context) => DevicePage())),
                   child: Text('Devices', style: textStyle(true))),
               TextButton(
-                  onPressed: () {},
+                  onPressed: () => Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => BevaragesPage())),
                   child: Text('Beverages', style: textStyle(true))),
               const SizedBox(),
               GestureDetector(

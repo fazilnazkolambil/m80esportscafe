@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -106,7 +108,8 @@ class ListDevices extends StatelessWidget {
 
     return Consumer(
       builder: (context, ref, child) {
-        var data = ref.watch(deviceProvider(deviceType));
+        var data = ref.watch(deviceProvider(
+            jsonEncode({'deviceType': deviceType, 'cafe': selectedCafe})));
         return data.when(
           data: (devices) {
             return ListView.separated(
@@ -229,36 +232,49 @@ class ListDevices extends StatelessWidget {
                                                               .collection(
                                                                   'invoice')
                                                               .doc(invoiceId)
-                                                              .set({
-                                                            'deviceName': device
-                                                                .deviceName,
-                                                            'playTime': 0,
-                                                            'extras': [],
-                                                            'extraAmount': 0,
-                                                            'capacityPrice': 0,
-                                                            'startTime':
-                                                                DateTime.now(),
-                                                            'playCost': 0,
-                                                            'id': invoiceId,
-                                                            'remainingCapacity':
-                                                                device.capacity >
-                                                                        1
-                                                                    ? 2
-                                                                    : 0,
-                                                            'paidbyCash': 0,
-                                                            'paidbyBank': 0,
-                                                            'paid': false,
-                                                            'endTime': null,
-                                                            'totalCapacity':
-                                                                device.capacity
-                                                          });
+                                                              .set(InvoiceModel(
+                                                                      capacityPrice:
+                                                                          0,
+                                                                      deviceName:
+                                                                          device
+                                                                              .deviceName,
+                                                                      extraAmount:
+                                                                          0,
+                                                                      extras: [],
+                                                                      id:
+                                                                          invoiceId,
+                                                                      paid:
+                                                                          false,
+                                                                      paidbyBank:
+                                                                          0,
+                                                                      paidbyCash:
+                                                                          0,
+                                                                      playCost:
+                                                                          0,
+                                                                      playTime:
+                                                                          0,
+                                                                      remainingCapacity:
+                                                                          device.capacity > 1
+                                                                              ? 2
+                                                                              : 0,
+                                                                      startTime:
+                                                                          DateTime
+                                                                              .now(),
+                                                                      totalCapacity:
+                                                                          device
+                                                                              .capacity,
+                                                                      discount:
+                                                                          0,
+                                                                      endTime:
+                                                                          null)
+                                                                  .toJson());
+                                                          Navigator.pop(
+                                                              context);
                                                           toastMessage(
                                                               context: context,
                                                               label:
                                                                   "${device.deviceName} started at ${DateFormat.jm().format(DateTime.now())}",
                                                               isSuccess: true);
-                                                          Navigator.pop(
-                                                              context);
                                                         },
                                                         child: Text('Ok')),
                                                   ],
@@ -464,6 +480,8 @@ class ListDevices extends StatelessWidget {
                                                                           'remainingCapacity':
                                                                               FieldValue.increment(-1)
                                                                         });
+                                                                        Navigator.pop(
+                                                                            context);
                                                                         toastMessage(
                                                                             context:
                                                                                 context,
@@ -471,8 +489,6 @@ class ListDevices extends StatelessWidget {
                                                                                 'Controller added',
                                                                             isSuccess:
                                                                                 true);
-                                                                        Navigator.pop(
-                                                                            context);
                                                                       } else {
                                                                         toastMessage(
                                                                             context:
@@ -616,7 +632,12 @@ class ListDevices extends StatelessWidget {
                                                               'playCost':
                                                                   playCost,
                                                               'endTime':
-                                                                  DateTime.now()
+                                                                  DateTime
+                                                                      .now(),
+                                                              'discount':
+                                                                  (discount *
+                                                                          playCost) /
+                                                                      100
                                                             });
                                                             var invoiceSnapshot =
                                                                 await getInvoice(

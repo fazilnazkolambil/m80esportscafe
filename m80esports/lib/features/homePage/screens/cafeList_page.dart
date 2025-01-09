@@ -3,8 +3,10 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lottie/lottie.dart';
 import 'package:m80_esports/core/const_page.dart';
 import 'package:m80_esports/features/authPage/screens/login_page.dart';
+import 'package:m80_esports/features/homePage/controller/homePage_controller.dart';
 import 'package:m80_esports/features/homePage/screens/bottom_nav.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -24,8 +26,6 @@ class _CafeListState extends ConsumerState<CafeList> {
     'assets/images/GC 2.jpg',
     'assets/images/GC 3.jpg'
   ];
-
-  List centers = [];
 
   // Future<void> listGamingCenter() async {
   //   final url = '$api/listGamingCenter';
@@ -60,7 +60,6 @@ class _CafeListState extends ConsumerState<CafeList> {
   //         isSuccess: false);
   //   }
   // }
-
   // Future<void> listGamingCenter() async {
   //   const String query = """
   // query ListGamingCenters(\$organisationId: String!, \$userId: String!) {
@@ -121,7 +120,6 @@ class _CafeListState extends ConsumerState<CafeList> {
   //         isSuccess: false);
   //   }
   // }
-
   // listGamingCenter() async {
   //   setState(() {
   //     isLoading = true;
@@ -140,9 +138,7 @@ class _CafeListState extends ConsumerState<CafeList> {
   //             // 'next_token': ''
   //           }
   //         }));
-
   //     var response = await operation.response;
-
   //     Map<String, dynamic> body = jsonDecode(response.data);
   //     print(body['listGamingCenter']);
   //     setState(() {
@@ -158,25 +154,6 @@ class _CafeListState extends ConsumerState<CafeList> {
   //   }
   // }
 
-  Future<void> getCafe() async {
-    var data = await FirebaseFirestore.instance
-        .collection('Organisations')
-        .doc('m80Esports')
-        .collection('cafes')
-        .get();
-    for (int i = 0; i < data.docs.length; i++) {
-      setState(() {
-        centers.add(data.docs[i]);
-      });
-    }
-  }
-
-  @override
-  void initState() {
-    getCafe();
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     final isLoading = ref.watch(loadingProvider);
@@ -187,54 +164,6 @@ class _CafeListState extends ConsumerState<CafeList> {
         leading: SizedBox(),
         title: Text('Select Cafe', style: textStyle(true)),
         centerTitle: true,
-        actions: [
-          GestureDetector(
-              onTap: () {
-                showDialog(
-                  context: context,
-                  barrierDismissible: false,
-                  builder: (context) {
-                    return AlertDialog(
-                      backgroundColor: ColorConst.backgroundColor,
-                      title: Text(
-                        'Logout',
-                        style: textStyle(true),
-                      ),
-                      content: Text(
-                        'Are you sure you want to logout?',
-                        style: textStyle(false),
-                      ),
-                      actions: [
-                        TextButton(
-                            onPressed: () => Navigator.pop(context),
-                            child: const Text('No')),
-                        TextButton(
-                            onPressed: () async {
-                              Amplify.Auth.signOut();
-                              SharedPreferences prefs =
-                                  await SharedPreferences.getInstance();
-                              prefs.setBool('isLoggedIn', false);
-                              await prefs.remove('currentUser');
-                              prefs.remove('selectedCafe');
-                              prefs.remove('cafe');
-                              Navigator.pushAndRemoveUntil(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => const LoginPage()),
-                                  (route) => false);
-                            },
-                            child: const Text('Yes'))
-                      ],
-                    );
-                  },
-                );
-              },
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: w * 0.03),
-                child: const Icon(Icons.logout_outlined,
-                    color: ColorConst.textColor),
-              )),
-        ],
       ),
       body: Stack(
         children: [
@@ -250,21 +179,20 @@ class _CafeListState extends ConsumerState<CafeList> {
                       enlargeCenterPage: true,
                       autoPlay: true,
                       enableInfiniteScroll: true)),
-              Expanded(
-                child: centers.isEmpty
-                    ? Center(
-                        child: Text(
-                        'Loading...',
-                        style: textStyle(false),
-                      ))
-                    : ListView.builder(
+              Expanded(child: Consumer(
+                builder: (context, ref, child) {
+                  var data = ref.watch(getCafeprovider);
+                  return data.when(
+                    data: (cafe) {
+                      return ListView.builder(
                         physics: BouncingScrollPhysics(),
-                        itemCount: centers.length,
+                        itemCount: cafe.length,
                         itemBuilder: (context, index) {
                           return GestureDetector(
                             onTap: () async {
                               setState(() {
-                                selectedCafe = centers[index]['label'];
+                                selectedCafe = cafe[index].label;
+                                discount = cafe[index].discount;
                                 deviceCategory.clear();
                               });
                               if (deviceCategory.isEmpty) {
@@ -302,7 +230,7 @@ class _CafeListState extends ConsumerState<CafeList> {
                                         BorderRadius.circular(w * 0.05),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: centers[index]['status']
+                                        color: cafe[index].status
                                             ? ColorConst.successAlert
                                                 .withOpacity(0.7)
                                             : ColorConst.errorAlert
@@ -325,13 +253,13 @@ class _CafeListState extends ConsumerState<CafeList> {
                                               MainAxisAlignment.spaceEvenly,
                                           children: [
                                             Text(
-                                              centers[index]['label'],
+                                              cafe[index].label,
                                               style: textStyle(true),
                                               overflow: TextOverflow.ellipsis,
                                               maxLines: 1,
                                             ),
                                             Text(
-                                              centers[index]['address'],
+                                              cafe[index].address,
                                               style: textStyle(false),
                                               overflow: TextOverflow.ellipsis,
                                               maxLines: 3,
@@ -350,7 +278,7 @@ class _CafeListState extends ConsumerState<CafeList> {
                                     ],
                                   ),
                                 ),
-                                if (centers[index]['discount'] != 0)
+                                if (cafe[index].discount != 0)
                                   Positioned(
                                     top: 0,
                                     left: 0,
@@ -366,7 +294,7 @@ class _CafeListState extends ConsumerState<CafeList> {
                                         ),
                                       ),
                                       child: Text(
-                                          '${centers[index]['discount']}% OFF',
+                                          '${cafe[index].discount.toStringAsFixed(0)}% OFF',
                                           style: textStyle(false)),
                                     ),
                                   ),
@@ -374,8 +302,17 @@ class _CafeListState extends ConsumerState<CafeList> {
                             ),
                           );
                         },
-                      ),
-              )
+                      );
+                    },
+                    error: (error, stackTrace) => toastMessage(
+                        context: context,
+                        label: 'Error : $error',
+                        isSuccess: false),
+                    loading: () => Center(
+                        child: Lottie.asset(Gifs.loadingGif, height: w * 0.2)),
+                  );
+                },
+              ))
             ],
           ),
           if (isLoading) loadingScreen()

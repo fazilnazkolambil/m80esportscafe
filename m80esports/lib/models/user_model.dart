@@ -1,7 +1,3 @@
-// To parse this JSON data, do
-//
-//     final pokedex = pokedexFromJson(jsonString);
-
 import 'dart:convert';
 
 UserModel pokedexFromJson(String str) => UserModel.fromJson(json.decode(str));

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:m80_esports/core/firebaseProvider.dart';
 import 'package:m80_esports/core/globalVariables.dart';
 import 'package:m80_esports/models/beverages_model.dart';
+import 'package:m80_esports/models/cafe_model.dart';
 import 'package:m80_esports/models/deviceCategory_model.dart';
 import 'package:m80_esports/models/devices_model.dart';
 import 'package:m80_esports/models/invoice_model.dart';
@@ -20,6 +21,21 @@ class HomepageRepository {
       .collection('Organisations')
       .doc('m80Esports')
       .collection('cafes');
+
+  Future<List<CafeModel>> getCafes() async {
+    QuerySnapshot data = await FirebaseFirestore.instance
+        .collection('Organisations')
+        .doc('m80Esports')
+        .collection('cafes')
+        .where('deleted', isEqualTo: false)
+        .get();
+    List<CafeModel> cafeModel = [];
+    for (var cafes in data.docs) {
+      cafeModel.add(CafeModel.fromJson(cafes.data() as Map<String, dynamic>));
+    }
+    return cafeModel;
+  }
+
   Stream<List<InvoiceModel>> getinvoices(DateTime selectedDate) {
     DateTime startOfDay =
         DateTime(selectedDate.year, selectedDate.month, selectedDate.day);
@@ -36,12 +52,12 @@ class HomepageRepository {
             event.docs.map((e) => InvoiceModel.fromJson(e.data())).toList());
   }
 
-  Stream<List<DeviceModel>> getDevices(String deviceType) {
+  Stream<List<DeviceModel>> getDevices(String deviceType, String cafe) {
     return FirebaseFirestore.instance
         .collection('Organisations')
         .doc('m80Esports')
         .collection('cafes')
-        .doc(selectedCafe)
+        .doc(cafe)
         .collection('devices')
         .doc(deviceType)
         .collection(deviceType)

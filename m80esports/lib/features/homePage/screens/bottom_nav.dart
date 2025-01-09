@@ -10,6 +10,7 @@ import 'package:m80_esports/features/homePage/screens/income_page.dart';
 import 'package:m80_esports/features/homePage/screens/invoice_list.dart';
 import 'package:m80_esports/features/homePage/screens/price_list.dart';
 import 'package:m80_esports/features/homePage/screens/qr_page.dart';
+import 'package:m80_esports/features/homePage/screens/users_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:expandable/expandable.dart';
 import '../../../core/globalVariables.dart';
@@ -70,7 +71,8 @@ class _MyHomePageState extends State<BottomNavBar> {
                       MaterialPageRoute(builder: (context) => IncomePage())),
                   child: Text('Income', style: textStyle(true))),
               TextButton(
-                  onPressed: () {},
+                  onPressed: () => Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => UsersPage())),
                   child: Text('Users', style: textStyle(true))),
               TextButton(
                   onPressed: () => Navigator.push(context,

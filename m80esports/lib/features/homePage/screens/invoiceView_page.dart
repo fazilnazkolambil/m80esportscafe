@@ -40,59 +40,62 @@ class InvoiceView extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Play time',
-              style: textStyle(false),
+            Center(
+              child: Text(
+                'Play time',
+                style: textStyle(false),
+              ),
             ),
-            Text(
-              '${DateFormat.jm().format(invoice.startTime)} - ${DateFormat.jm().format(invoice.endTime!)} = ${invoice.playTime} minutes',
-              style: textStyle(true),
+            Center(
+              child: Text(
+                '${DateFormat.jm().format(invoice.startTime)} - ${DateFormat.jm().format(invoice.endTime!)} = ${invoice.playTime} minutes',
+                style: textStyle(true),
+              ),
             ),
             SizedBox(
               height: h * 0.01,
+              child: Divider(),
             ),
-            Text(
-              'Play cost',
-              style: textStyle(false),
+            statItem('Play cost', '${invoice.playCost.toStringAsFixed(2)}/-'),
+            SizedBox(
+              height: h * 0.01,
             ),
-            Text('${invoice.playCost.toStringAsFixed(2)}/-',
-                style: textStyle(true)),
+            statItem('Discount - $discount %',
+                '-${invoice.discount.toStringAsFixed(2)}/-'),
             SizedBox(
               height: h * 0.01,
             ),
             if (invoice.extras.isNotEmpty)
               ExpandablePanel(
-                theme: const ExpandableThemeData(
+                theme: ExpandableThemeData(
                   useInkWell: false,
                   iconColor: ColorConst.textColor,
-                  iconSize: 20,
+                  iconSize: w * 0.06,
                 ),
                 header: Container(
                   height: 30,
                   width: double.infinity,
-                  child: Text(
-                    'Extras',
-                    style: textStyle(false),
-                  ),
+                  child: statItem('Extra amount',
+                      '${invoice.extraAmount + invoice.capacityPrice}/-'),
                 ),
                 collapsed: const SizedBox(),
                 expanded: SizedBox(
-                  height: 200,
+                  height: 150,
                   child: ListView.builder(
                     itemCount: invoice.extras.length,
                     itemBuilder: (context, index) {
                       var item = invoice.extras[index];
                       return SizedBox(
-                        height: 100,
+                        height: 30,
                         child: ListTile(
                           leading:
-                              Text('${index + 1}', style: textStyle(false)),
+                              Text('${index + 1} - ', style: textStyle(false)),
                           title: Text(
                             "${item['quantity']} * ${item['name']}",
                             style: textStyle(false),
                           ),
                           trailing: Text(
-                            "${item['quantity'] * item['price']}.00",
+                            "${(item['quantity'] * item['price']).toStringAsFixed(2)}",
                             style: textStyle(false),
                           ),
                         ),
@@ -106,20 +109,19 @@ class InvoiceView extends StatelessWidget {
                 'Total Controllers : ${invoice.totalCapacity - invoice.remainingCapacity}',
                 style: textStyle(false),
               ),
-            Text(
-              'Extra amount',
-              style: textStyle(false),
-            ),
-            Text('${invoice.extraAmount + invoice.capacityPrice}/-',
-                style: textStyle(true)),
             Divider(),
-            Text(
-              'Total to Pay',
-              style: textStyle(true),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Total to Pay',
+                  style: textStyle(true),
+                ),
+                Text(
+                    '${(invoice.playCost + invoice.extraAmount + invoice.capacityPrice - invoice.discount).toStringAsFixed(2)}/-',
+                    style: textStyle(true)),
+              ],
             ),
-            Text(
-                '${(invoice.playCost + invoice.extraAmount + invoice.capacityPrice).toStringAsFixed(2)}/-',
-                style: textStyle(true)),
             SizedBox(
               height: h * 0.01,
             ),

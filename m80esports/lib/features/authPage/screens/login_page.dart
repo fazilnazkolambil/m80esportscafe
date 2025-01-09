@@ -255,6 +255,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       }
     } catch (e) {
       ref.read(loadingProvider.notifier).update((state) => false);
+      print('Error during signup: $e');
       toastMessage(
           context: context, label: 'Error during signup: $e', isSuccess: false);
     }
@@ -290,447 +291,424 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     final isLoading = ref.watch(loadingProvider);
     final phoneValidation = RegExp(r"[0-9]{10}");
     // final emailValidation = RegExp(r'^[\w-.]+@([\w-]+\.)+\w{2,4}');
-    List genders = ['Male', 'Female', 'Trans-gender', 'Other'];
-    return AnimateGradient(
-        duration: const Duration(seconds: 5),
-        primaryColors: [
-          ColorConst.successAlert,
-          ColorConst.backgroundColor,
-          ColorConst.errorAlert
-        ],
-        secondaryColors: [
-          ColorConst.errorAlert,
-          ColorConst.backgroundColor,
-          ColorConst.successAlert
-        ],
-        child: Scaffold(
-            body: Stack(
-          children: [
-            Padding(
-              padding: EdgeInsets.all(w * 0.03),
-              child: SingleChildScrollView(
-                child: Form(
-                  key: formKey,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(height: h * 0.1),
-                      Center(
-                          child: Image(
-                              image: const AssetImage(ImageConst.logo),
-                              height: h * 0.3)),
-                      SizedBox(height: h * 0.03),
-                      Text(
-                          signUpPage
-                              ? 'Create an account'
-                              : otpPage
-                                  ? 'Enter the OTP'
-                                  : 'Login with Mobile number',
-                          style: textStyle(false)),
-                      SizedBox(height: h * 0.03),
-                      TextFormField(
-                        controller: phoneNumber_controller,
-                        keyboardType: TextInputType.number,
-                        readOnly: signUpPage || otpPage ? true : false,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly,
-                        ],
-                        autovalidateMode: AutovalidateMode.onUnfocus,
-                        validator: (value) {
-                          if (!phoneValidation.hasMatch(value!)) {
-                            return 'Enter a valid Phone number';
-                          } else {
-                            return null;
-                          }
-                        },
-                        maxLength: 10,
-                        style: textStyle(false),
-                        decoration: InputDecoration(
-                          counterText: '',
-                          prefixIcon: CountryCodePicker(
-                            initialSelection: "+91",
-                            onInit: (value) {
-                              countryCode = value;
-                            },
-                            onChanged: (value) {
-                              countryCode = value;
-                            },
-                            hideMainText: false,
-                            showFlag: false,
-                            barrierColor: Colors.black.withOpacity(0),
-                            textStyle: textStyle(false),
-                          ),
-                          hintText: 'Enter your Mobile number *',
-                          hintStyle: TextStyle(
-                              color: ColorConst.textColor.withOpacity(0.5)),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(w * 0.03),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(w * 0.03),
-                              borderSide: const BorderSide(
-                                  color: ColorConst.textColor)),
-                          focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(w * 0.03),
-                              borderSide: const BorderSide(
-                                  color: ColorConst.textColor)),
-                        ),
-                      ),
-                      SizedBox(height: signUpPage ? h * 0.01 : h * 0.03),
-
-                      /// CHECK USER BUTTON
-                      if (signUpPage == false && otpPage == false)
-                        GestureDetector(
-                          onTap: () {
-                            if (formKey.currentState!.validate()) {
-                              if (countryCode == null) {
-                                toastMessage(
-                                    context: context,
-                                    label: 'Please select your country code!',
-                                    isSuccess: false);
-                              } else if (phoneNumber_controller.text.isEmpty) {
-                                toastMessage(
-                                    context: context,
-                                    label: 'Please enter your Mobile number!',
-                                    isSuccess: false);
-                              } else {
-                                userlogin();
-                              }
-                            }
-                          },
-                          child: Container(
-                              width: w * 0.3,
-                              height: h * 0.05,
-                              decoration: BoxDecoration(
-                                  color: ColorConst.buttons,
-                                  borderRadius: BorderRadius.circular(w * 0.1)),
-                              child: Center(
-                                  child: Text('Send OTP',
-                                      style: textStyle(false)))),
-                        ),
+    List genders = ['Male', 'Female', 'Other'];
+    return Scaffold(
+        body: Stack(
+      children: [
+        Padding(
+          padding: EdgeInsets.all(w * 0.03),
+          child: SingleChildScrollView(
+            child: Form(
+              key: formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: h * 0.1),
+                  Center(
+                      child: Image(
+                          image: const AssetImage(ImageConst.logo),
+                          height: h * 0.3)),
+                  SizedBox(height: h * 0.03),
+                  Text(
                       signUpPage
-                          ? Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                          ? 'Create an account'
+                          : otpPage
+                              ? 'Enter the OTP'
+                              : 'Login with Mobile number',
+                      style: textStyle(false)),
+                  SizedBox(height: h * 0.03),
+                  TextFormField(
+                    controller: phoneNumber_controller,
+                    keyboardType: TextInputType.number,
+                    readOnly: signUpPage || otpPage ? true : false,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                    ],
+                    autovalidateMode: AutovalidateMode.onUnfocus,
+                    validator: (value) {
+                      if (!phoneValidation.hasMatch(value!)) {
+                        return 'Enter a valid Phone number';
+                      } else {
+                        return null;
+                      }
+                    },
+                    maxLength: 10,
+                    style: textStyle(false),
+                    decoration: InputDecoration(
+                      counterText: '',
+                      prefixIcon: CountryCodePicker(
+                        initialSelection: "+91",
+                        onInit: (value) {
+                          countryCode = value;
+                        },
+                        onChanged: (value) {
+                          countryCode = value;
+                        },
+                        hideMainText: false,
+                        showFlag: false,
+                        barrierColor: Colors.black.withOpacity(0),
+                        textStyle: textStyle(false),
+                      ),
+                      hintText: 'Enter your Mobile number *',
+                      hintStyle: TextStyle(
+                          color: ColorConst.textColor.withOpacity(0.5)),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(w * 0.03),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(w * 0.03),
+                          borderSide:
+                              const BorderSide(color: ColorConst.textColor)),
+                      focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(w * 0.03),
+                          borderSide:
+                              const BorderSide(color: ColorConst.textColor)),
+                    ),
+                  ),
+                  SizedBox(height: signUpPage ? h * 0.01 : h * 0.03),
+
+                  /// CHECK USER BUTTON
+                  if (signUpPage == false && otpPage == false)
+                    GestureDetector(
+                      onTap: () {
+                        if (formKey.currentState!.validate()) {
+                          if (countryCode == null) {
+                            toastMessage(
+                                context: context,
+                                label: 'Please select your country code!',
+                                isSuccess: false);
+                          } else if (phoneNumber_controller.text.isEmpty) {
+                            toastMessage(
+                                context: context,
+                                label: 'Please enter your Mobile number!',
+                                isSuccess: false);
+                          } else {
+                            userlogin();
+                          }
+                        }
+                      },
+                      child: Container(
+                          width: w * 0.3,
+                          height: h * 0.05,
+                          decoration: BoxDecoration(
+                              color: ColorConst.buttons,
+                              borderRadius: BorderRadius.circular(w * 0.1)),
+                          child: Center(
+                              child:
+                                  Text('Send OTP', style: textStyle(false)))),
+                    ),
+                  signUpPage
+                      ? Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            TextFormField(
+                              controller: userName_controller,
+                              keyboardType: TextInputType.emailAddress,
+                              textCapitalization: TextCapitalization.words,
+                              style: textStyle(false),
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return 'Enter your name';
+                                } else {
+                                  return null;
+                                }
+                              },
+                              decoration: InputDecoration(
+                                hintText: 'Enter your name *',
+                                hintStyle: TextStyle(
+                                    color:
+                                        ColorConst.textColor.withOpacity(0.5)),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(w * 0.03),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.circular(w * 0.03),
+                                    borderSide: const BorderSide(
+                                        color: ColorConst.textColor)),
+                                focusedBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.circular(w * 0.03),
+                                    borderSide: const BorderSide(
+                                        color: ColorConst.textColor)),
+                              ),
+                            ),
+                            SizedBox(height: h * 0.01),
+                            // TextFormField(
+                            //   controller: email_controller,
+                            //   keyboardType: TextInputType.emailAddress,
+                            //   style: textStyle(false),
+                            //   autovalidateMode: AutovalidateMode.onUnfocus,
+                            //   validator: (email) {
+                            //     if (!emailValidation.hasMatch(email!)) {
+                            //       return "Enter a valid Email";
+                            //     } else {
+                            //       return null;
+                            //     }
+                            //   },
+                            //   decoration: InputDecoration(
+                            //     hintText: 'Enter your Email *',
+                            //     hintStyle: TextStyle(
+                            //         color:
+                            //             ColorConst.textColor.withOpacity(0.5)),
+                            //     border: OutlineInputBorder(
+                            //       borderRadius: BorderRadius.circular(w * 0.03),
+                            //     ),
+                            //     enabledBorder: OutlineInputBorder(
+                            //         borderRadius:
+                            //             BorderRadius.circular(w * 0.03),
+                            //         borderSide: const BorderSide(
+                            //             color: ColorConst.textColor)),
+                            //     focusedBorder: OutlineInputBorder(
+                            //         borderRadius:
+                            //             BorderRadius.circular(w * 0.03),
+                            //         borderSide: const BorderSide(
+                            //             color: ColorConst.textColor)),
+                            //   ),
+                            // ),
+                            //SizedBox(height: h * 0.01),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                TextFormField(
-                                  controller: userName_controller,
-                                  keyboardType: TextInputType.emailAddress,
-                                  textCapitalization: TextCapitalization.words,
-                                  style: textStyle(false),
-                                  validator: (value) {
-                                    if (value!.isEmpty) {
-                                      return 'Enter your name';
-                                    } else {
-                                      return null;
-                                    }
-                                  },
-                                  decoration: InputDecoration(
-                                    hintText: 'Enter your name *',
-                                    hintStyle: TextStyle(
-                                        color: ColorConst.textColor
-                                            .withOpacity(0.5)),
-                                    border: OutlineInputBorder(
+                                Container(
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                          color: ColorConst.textColor),
                                       borderRadius:
-                                          BorderRadius.circular(w * 0.03),
+                                          BorderRadius.circular(w * 0.03)),
+                                  width: w * 0.45,
+                                  height: h * 0.06,
+                                  child: DropdownButton(
+                                    dropdownColor: ColorConst.backgroundColor,
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: w * 0.03),
+                                    hint: Text("Gender *",
+                                        style: TextStyle(
+                                            color: ColorConst.textColor
+                                                .withOpacity(0.5))),
+                                    icon: Icon(
+                                      CupertinoIcons.chevron_down,
+                                      size: w * 0.04,
                                     ),
-                                    enabledBorder: OutlineInputBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(w * 0.03),
-                                        borderSide: const BorderSide(
-                                            color: ColorConst.textColor)),
-                                    focusedBorder: OutlineInputBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(w * 0.03),
-                                        borderSide: const BorderSide(
-                                            color: ColorConst.textColor)),
+                                    isExpanded: true,
+                                    underline: const SizedBox(),
+                                    style: textStyle(false),
+                                    value: gender,
+                                    items: List.generate(
+                                      genders.length,
+                                      (index) {
+                                        return DropdownMenuItem(
+                                          value: genders[index],
+                                          child: Text(
+                                            genders[index],
+                                            style: textStyle(false),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                    onChanged: (newValue) {
+                                      setState(() {
+                                        gender = newValue.toString();
+                                      });
+                                    },
                                   ),
                                 ),
-                                SizedBox(height: h * 0.01),
-                                // TextFormField(
-                                //   controller: email_controller,
-                                //   keyboardType: TextInputType.emailAddress,
-                                //   style: textStyle(false),
-                                //   autovalidateMode: AutovalidateMode.onUnfocus,
-                                //   validator: (email) {
-                                //     if (!emailValidation.hasMatch(email!)) {
-                                //       return "Enter a valid Email";
-                                //     } else {
-                                //       return null;
-                                //     }
-                                //   },
-                                //   decoration: InputDecoration(
-                                //     hintText: 'Enter your Email *',
-                                //     hintStyle: TextStyle(
-                                //         color:
-                                //             ColorConst.textColor.withOpacity(0.5)),
-                                //     border: OutlineInputBorder(
-                                //       borderRadius: BorderRadius.circular(w * 0.03),
-                                //     ),
-                                //     enabledBorder: OutlineInputBorder(
-                                //         borderRadius:
-                                //             BorderRadius.circular(w * 0.03),
-                                //         borderSide: const BorderSide(
-                                //             color: ColorConst.textColor)),
-                                //     focusedBorder: OutlineInputBorder(
-                                //         borderRadius:
-                                //             BorderRadius.circular(w * 0.03),
-                                //         borderSide: const BorderSide(
-                                //             color: ColorConst.textColor)),
-                                //   ),
-                                // ),
-                                //SizedBox(height: h * 0.01),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Container(
-                                      decoration: BoxDecoration(
-                                          border: Border.all(
-                                              color: ColorConst.textColor),
-                                          borderRadius:
-                                              BorderRadius.circular(w * 0.03)),
-                                      width: w * 0.45,
-                                      height: h * 0.06,
-                                      child: DropdownButton(
-                                        dropdownColor:
-                                            ColorConst.backgroundColor,
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: w * 0.03),
-                                        hint: Text("Gender *",
-                                            style: TextStyle(
-                                                color: ColorConst.textColor
-                                                    .withOpacity(0.5))),
-                                        icon: Icon(
-                                          CupertinoIcons.chevron_down,
-                                          size: w * 0.04,
-                                        ),
-                                        isExpanded: true,
-                                        underline: const SizedBox(),
-                                        style: textStyle(false),
-                                        value: gender,
-                                        items: List.generate(
-                                          genders.length,
-                                          (index) {
-                                            return DropdownMenuItem(
-                                              value: genders[index],
-                                              child: Text(
-                                                genders[index],
-                                                style: textStyle(false),
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                        onChanged: (newValue) {
-                                          setState(() {
-                                            gender = newValue.toString();
-                                          });
-                                        },
-                                      ),
-                                    ),
-                                    InkWell(
-                                      onTap: () async {
-                                        var datePicked = await DatePicker
-                                            .showSimpleDatePicker(
-                                          context,
-                                          initialDate: pickedDate,
-                                          firstDate: DateTime(1950),
-                                          lastDate: DateTime.now(),
-                                          dateFormat: "dd-MMMM-yyyy",
-                                          locale: DateTimePickerLocale.en_us,
-                                          itemTextStyle: textStyle(true),
-                                          textColor: ColorConst.textColor,
-                                          backgroundColor:
-                                              ColorConst.backgroundColor,
-                                        );
-                                        setState(() {
-                                          pickedDate = datePicked;
-                                        });
-                                      },
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                            border: Border.all(
-                                                color: ColorConst.textColor),
-                                            borderRadius: BorderRadius.circular(
-                                                w * 0.03)),
-                                        width: w * 0.45,
-                                        height: h * 0.06,
-                                        child: Center(
-                                            child: Text(
-                                          pickedDate != null
-                                              ? DateFormat('dd-MMMM-yyyy')
-                                                  .format(
-                                                      pickedDate as DateTime)
-                                              : 'Date of Birth *',
-                                          style: TextStyle(
-                                              color: pickedDate != null
-                                                  ? ColorConst.textColor
-                                                  : ColorConst.textColor
-                                                      .withOpacity(0.5),
-                                              fontSize: w * 0.03),
-                                        )),
-                                      ),
-                                    )
-                                  ],
-                                ),
-                                SizedBox(height: h * 0.02),
-                                otpPage
-                                    ? FractionallySizedBox(
-                                        child: Pinput(
-                                        controller: otp_controller,
-                                        length: 4,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceEvenly,
-                                      ))
-                                    : const SizedBox(),
-                                SizedBox(height: h * 0.02),
-
-                                /// SIGNUP BUTTON
-                                otpPage
-                                    ? GestureDetector(
-                                        onTap: () async {
-                                          // if (otp_controller.text.isEmpty) {
-                                          //   toastMessage(
-                                          //       context: context,
-                                          //       label: 'Enter the OTP',
-                                          //       isSuccess: false);
-                                          // } else {
-                                          //   verifyOTP();
-                                          // }
-                                        },
-                                        child: Container(
-                                            width: w * 0.3,
-                                            height: h * 0.05,
-                                            decoration: BoxDecoration(
-                                                color: ColorConst.buttons,
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                        w * 0.1)),
-                                            child: Center(
-                                                child: Text('Verify',
-                                                    style: textStyle(false)))),
-                                      )
-                                    : GestureDetector(
-                                        onTap: () {
-                                          if (formKey.currentState!
-                                              .validate()) {
-                                            if (userName_controller
-                                                .text.isEmpty) {
-                                              toastMessage(
-                                                  context: context,
-                                                  label:
-                                                      'Please enter your Name!',
-                                                  isSuccess: false);
-                                            }
-                                            // else if (email_controller
-                                            //     .text.isEmpty) {
-                                            //   toastMessage(
-                                            //       context: context,
-                                            //       label: 'Please enter your Email!',
-                                            //       isSuccess: false);
-                                            // }
-                                            else if (gender == null) {
-                                              toastMessage(
-                                                  context: context,
-                                                  label:
-                                                      'Please select your Gender!',
-                                                  isSuccess: false);
-                                            } else if (pickedDate == null) {
-                                              toastMessage(
-                                                  context: context,
-                                                  label:
-                                                      'Please select your D.O.B!',
-                                                  isSuccess: false);
-                                            } else {
-                                              userSignUp();
-                                            }
-                                          }
-                                        },
-                                        child: Container(
-                                            width: w * 0.3,
-                                            height: h * 0.05,
-                                            decoration: BoxDecoration(
-                                                color: ColorConst.buttons,
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                        w * 0.1)),
-                                            child: Center(
-                                                child: Text('SignUp',
-                                                    style: textStyle(false)))),
-                                      )
+                                InkWell(
+                                  onTap: () async {
+                                    var datePicked =
+                                        await DatePicker.showSimpleDatePicker(
+                                      context,
+                                      initialDate: pickedDate,
+                                      firstDate: DateTime(1950),
+                                      lastDate: DateTime.now(),
+                                      dateFormat: "dd-MMMM-yyyy",
+                                      locale: DateTimePickerLocale.en_us,
+                                      itemTextStyle: textStyle(true),
+                                      textColor: ColorConst.textColor,
+                                      backgroundColor:
+                                          ColorConst.backgroundColor,
+                                    );
+                                    setState(() {
+                                      pickedDate = datePicked;
+                                    });
+                                  },
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                        border: Border.all(
+                                            color: ColorConst.textColor),
+                                        borderRadius:
+                                            BorderRadius.circular(w * 0.03)),
+                                    width: w * 0.45,
+                                    height: h * 0.06,
+                                    child: Center(
+                                        child: Text(
+                                      pickedDate != null
+                                          ? DateFormat('dd-MMMM-yyyy')
+                                              .format(pickedDate as DateTime)
+                                          : 'Date of Birth *',
+                                      style: TextStyle(
+                                          color: pickedDate != null
+                                              ? ColorConst.textColor
+                                              : ColorConst.textColor
+                                                  .withOpacity(0.5),
+                                          fontSize: w * 0.03),
+                                    )),
+                                  ),
+                                )
                               ],
-                            )
-                          : otpPage
-                              ? FractionallySizedBox(
-                                  child: Pinput(
-                                  controller: otp_controller,
-                                  length: 4,
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                ))
-                              : const SizedBox(),
-                      SizedBox(height: h * 0.03),
+                            ),
+                            SizedBox(height: h * 0.02),
+                            otpPage
+                                ? FractionallySizedBox(
+                                    child: Pinput(
+                                    controller: otp_controller,
+                                    length: 4,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                  ))
+                                : const SizedBox(),
+                            SizedBox(height: h * 0.02),
 
-                      /// LOGIN BUTTON
-                      if (otpPage == true && signUpPage == false)
-                        GestureDetector(
-                          onTap: () async {
-                            if (otp_controller.text.isEmpty) {
-                              toastMessage(
-                                  context: context,
-                                  label: 'Enter the OTP',
-                                  isSuccess: false);
-                            } else {
-                              verifyOTP();
-                            }
-                          },
-                          child: Container(
-                              width: w * 0.3,
-                              height: h * 0.05,
-                              decoration: BoxDecoration(
-                                  color: ColorConst.buttons,
-                                  borderRadius: BorderRadius.circular(w * 0.1)),
-                              child: Center(
-                                  child:
-                                      Text('Verify', style: textStyle(false)))),
-                        ),
-                      SizedBox(
-                        height: h * 0.03,
-                      ),
-                      if (otpPage == true || signUpPage == true)
-                        GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              otpPage = false;
-                              signUpPage = false;
-                              userName_controller.clear();
-                              otp_controller.clear();
-                              // email_controller.clear();
-                              gender = null;
-                              pickedDate = null;
-                            });
-                          },
-                          child: Row(
-                            children: [
-                              Icon(
-                                CupertinoIcons.back,
-                                color: ColorConst.textColor,
-                              ),
-                              SizedBox(
-                                width: w * 0.03,
-                              ),
-                              Text('Go back', style: textStyle(false))
-                            ],
-                          ),
+                            /// SIGNUP BUTTON
+                            otpPage
+                                ? GestureDetector(
+                                    onTap: () async {
+                                      // if (otp_controller.text.isEmpty) {
+                                      //   toastMessage(
+                                      //       context: context,
+                                      //       label: 'Enter the OTP',
+                                      //       isSuccess: false);
+                                      // } else {
+                                      //   verifyOTP();
+                                      // }
+                                    },
+                                    child: Container(
+                                        width: w * 0.3,
+                                        height: h * 0.05,
+                                        decoration: BoxDecoration(
+                                            color: ColorConst.buttons,
+                                            borderRadius:
+                                                BorderRadius.circular(w * 0.1)),
+                                        child: Center(
+                                            child: Text('Verify',
+                                                style: textStyle(false)))),
+                                  )
+                                : GestureDetector(
+                                    onTap: () {
+                                      if (formKey.currentState!.validate()) {
+                                        if (userName_controller.text.isEmpty) {
+                                          toastMessage(
+                                              context: context,
+                                              label: 'Please enter your Name!',
+                                              isSuccess: false);
+                                        }
+                                        // else if (email_controller
+                                        //     .text.isEmpty) {
+                                        //   toastMessage(
+                                        //       context: context,
+                                        //       label: 'Please enter your Email!',
+                                        //       isSuccess: false);
+                                        // }
+                                        else if (gender == null) {
+                                          toastMessage(
+                                              context: context,
+                                              label:
+                                                  'Please select your Gender!',
+                                              isSuccess: false);
+                                        } else if (pickedDate == null) {
+                                          toastMessage(
+                                              context: context,
+                                              label:
+                                                  'Please select your D.O.B!',
+                                              isSuccess: false);
+                                        } else {
+                                          userSignUp();
+                                        }
+                                      }
+                                    },
+                                    child: Container(
+                                        width: w * 0.3,
+                                        height: h * 0.05,
+                                        decoration: BoxDecoration(
+                                            color: ColorConst.buttons,
+                                            borderRadius:
+                                                BorderRadius.circular(w * 0.1)),
+                                        child: Center(
+                                            child: Text('SignUp',
+                                                style: textStyle(false)))),
+                                  )
+                          ],
                         )
-                    ],
+                      : otpPage
+                          ? FractionallySizedBox(
+                              child: Pinput(
+                              controller: otp_controller,
+                              length: 4,
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            ))
+                          : const SizedBox(),
+                  SizedBox(height: h * 0.03),
+
+                  /// LOGIN BUTTON
+                  if (otpPage == true && signUpPage == false)
+                    GestureDetector(
+                      onTap: () async {
+                        if (otp_controller.text.isEmpty) {
+                          toastMessage(
+                              context: context,
+                              label: 'Enter the OTP',
+                              isSuccess: false);
+                        } else {
+                          verifyOTP();
+                        }
+                      },
+                      child: Container(
+                          width: w * 0.3,
+                          height: h * 0.05,
+                          decoration: BoxDecoration(
+                              color: ColorConst.buttons,
+                              borderRadius: BorderRadius.circular(w * 0.1)),
+                          child: Center(
+                              child: Text('Verify', style: textStyle(false)))),
+                    ),
+                  SizedBox(
+                    height: h * 0.03,
                   ),
-                ),
+                  if (otpPage == true || signUpPage == true)
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          otpPage = false;
+                          signUpPage = false;
+                          userName_controller.clear();
+                          otp_controller.clear();
+                          // email_controller.clear();
+                          gender = null;
+                          pickedDate = null;
+                        });
+                      },
+                      child: Row(
+                        children: [
+                          Icon(
+                            CupertinoIcons.back,
+                            color: ColorConst.textColor,
+                          ),
+                          SizedBox(
+                            width: w * 0.03,
+                          ),
+                          Text('Go back', style: textStyle(false))
+                        ],
+                      ),
+                    )
+                ],
               ),
             ),
-            if (isLoading) loadingScreen()
-          ],
-        )));
+          ),
+        ),
+        if (isLoading) loadingScreen()
+      ],
+    ));
   }
 }

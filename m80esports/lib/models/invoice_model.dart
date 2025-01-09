@@ -13,6 +13,7 @@ class InvoiceModel {
   int remainingCapacity;
   DateTime startTime;
   int totalCapacity;
+  double discount;
 
   InvoiceModel({
     required this.capacityPrice,
@@ -29,6 +30,7 @@ class InvoiceModel {
     required this.remainingCapacity,
     required this.startTime,
     required this.totalCapacity,
+    required this.discount,
   });
 
   InvoiceModel copyWith({
@@ -46,6 +48,7 @@ class InvoiceModel {
     int? remainingCapacity,
     DateTime? startTime,
     int? totalCapacity,
+    double? discount,
   }) =>
       InvoiceModel(
         capacityPrice: capacityPrice ?? this.capacityPrice,
@@ -62,6 +65,7 @@ class InvoiceModel {
         paidbyCash: paidbyCash ?? this.paidbyCash,
         remainingCapacity: remainingCapacity ?? this.remainingCapacity,
         totalCapacity: totalCapacity ?? this.totalCapacity,
+        discount: discount ?? this.discount,
       );
 
   factory InvoiceModel.fromJson(Map<String, dynamic> json) => InvoiceModel(
@@ -79,6 +83,7 @@ class InvoiceModel {
         paidbyCash: double.tryParse(json['paidbyCash'].toString()) ?? 0,
         remainingCapacity: json["remainingCapacity"] ?? 0,
         totalCapacity: json["totalCapacity"] ?? 0,
+        discount: double.tryParse(json['discount'].toString()) ?? 0,
       );
 
   Map<String, dynamic> toJson() => {
@@ -96,6 +101,7 @@ class InvoiceModel {
         "paidbyCash": paidbyCash,
         "remainingCapacity": remainingCapacity,
         'totalCapacity': totalCapacity,
+        'discount': discount,
       };
 
   Map<String, dynamic> updateJson() {
@@ -114,6 +120,7 @@ class InvoiceModel {
     data["paidbyCash"] = paidbyCash;
     data["remainingCapacity"] = remainingCapacity;
     data['totalCapacity'] = totalCapacity;
+    data['discount'] = discount;
     return data;
   }
 }

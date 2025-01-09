@@ -45,7 +45,8 @@ class _IncomePageState extends State<IncomePage> {
                   totalAmount = a.capacityPrice +
                       a.extraAmount +
                       a.playCost +
-                      totalAmount;
+                      totalAmount -
+                      a.discount;
                   byBank = a.paidbyBank + byBank;
                   byCash = a.paidbyCash + byCash;
                 }
@@ -128,7 +129,7 @@ class _IncomePageState extends State<IncomePage> {
                                       style: textStyle(false),
                                     ),
                                     subtitle: Text(
-                                        "Total cost : ${(data[index].playCost + data[index].extraAmount + data[index].capacityPrice).toStringAsFixed(2)}",
+                                        "Total cost : ${(data[index].playCost + data[index].extraAmount + data[index].capacityPrice - data[index].discount).toStringAsFixed(2)}",
                                         style: textStyle(false)),
                                     trailing: Column(
                                       mainAxisAlignment:

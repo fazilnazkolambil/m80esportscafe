@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
 import 'package:m80_esports/core/const_page.dart';
 import 'package:m80_esports/models/user_model.dart';
-import 'package:motion_toast/motion_toast.dart';
 
 String version = '1.0.0';
 var w;
@@ -12,6 +11,7 @@ var h;
 UserModel? currentUser;
 String selectedCafe = '';
 List deviceCategory = [];
+double discount = 0;
 
 final loadingProvider = StateProvider((ref) => false);
 
